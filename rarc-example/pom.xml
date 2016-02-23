@@ -13,4 +13,23 @@
     <artifactId>rarc-example</artifactId>
     <name>rest-assured-raml-codegen-example</name>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>ru.lanwen.raml</groupId>
+                <artifactId>rarc-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-client</goal>
+                        </goals>
+                        <configuration>
+                            <basePackage>ru.lanwen.raml.test</basePackage>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
