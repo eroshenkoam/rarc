@@ -80,7 +80,7 @@ public class ApiResourceClass {
 
     public static String sanitize(String string) {
         return string
-                .replaceAll("[^ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\\./]", "")
+                .replaceAll("[^A-Za-z\\./]", "")
                 .replaceAll("^/", "")
                 .replaceAll("/$", "");
     }

@@ -69,7 +69,7 @@ public class RestAssuredRamlCodegen {
 
         List<JavaFile> files = resources.stream()
                 .map(resource -> {
-
+                    LOG.info("Process resource {}", resource.getUri());
                     UriConst uri = new UriConst(resource.getUri());
 
                     ApiResourceClass apiClass = ApiResourceClass.forResource(resource)
@@ -89,14 +89,16 @@ public class RestAssuredRamlCodegen {
                         action.getHeaders().forEach((name, header) ->
                                 apiClass.withMethod(new AddHeaderMethod(header, name, req, apiClass)));
 
-                        action.getBody().getOrDefault("application/x-www-form-urlencoded", new MimeType()).getFormParameters()
-                                .forEach((name, formParameters) -> {
-                                    if (formParameters.isEmpty()) {
-                                        return;
-                                    }
-                                    LOG.info("Form params for {}: {}", name, formParameters.size());
-                                    apiClass.withMethod(new AddFormParamMethod(formParameters.get(0), name, req, apiClass));
-                                });
+                        if (action.getBody() != null) {
+                            action.getBody().getOrDefault("application/x-www-form-urlencoded", new MimeType()).getFormParameters()
+                                    .forEach((name, formParameters) -> {
+                                        if (formParameters.isEmpty()) {
+                                            return;
+                                        }
+                                        LOG.info("Form params for {}: {}", name, formParameters.size());
+                                        apiClass.withMethod(new AddFormParamMethod(formParameters.get(0), name, req, apiClass));
+                                    });
+                        }
                     });
 
                     apiClass.withMethod(defaultConstructor(req, resp))
