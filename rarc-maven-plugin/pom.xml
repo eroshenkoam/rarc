@@ -45,7 +45,7 @@
                 <version>3.4</version>
                 <configuration>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-                    <goalPrefix>rarc-maven-plugin</goalPrefix>
+                    <goalPrefix>rarc</goalPrefix>
                 </configuration>
                 <executions>
                     <execution>

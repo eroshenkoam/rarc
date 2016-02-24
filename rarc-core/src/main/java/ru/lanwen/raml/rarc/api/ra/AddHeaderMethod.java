@@ -3,6 +3,7 @@ package ru.lanwen.raml.rarc.api.ra;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.raml.model.parameter.Header;
+import ru.lanwen.raml.rarc.api.AddParamMethod;
 import ru.lanwen.raml.rarc.api.ApiResourceClass;
 import ru.lanwen.raml.rarc.api.Method;
 
@@ -17,7 +18,7 @@ import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
 /**
  * @author lanwen (Merkushev Kirill)
  */
-public class AddHeaderMethod implements Method {
+public class AddHeaderMethod implements AddParamMethod {
     private Header header;
     private String name;
     private ReqSpecField req;
@@ -28,6 +29,11 @@ public class AddHeaderMethod implements Method {
         this.name = name;
         this.req = req;
         this.apiClass = apiClass;
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     @Override

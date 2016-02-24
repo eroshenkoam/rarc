@@ -3,6 +3,7 @@ package ru.lanwen.raml.rarc.api.ra;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.raml.model.parameter.QueryParameter;
+import ru.lanwen.raml.rarc.api.AddParamMethod;
 import ru.lanwen.raml.rarc.api.ApiResourceClass;
 import ru.lanwen.raml.rarc.api.Method;
 
@@ -16,7 +17,7 @@ import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
 /**
  * @author lanwen (Merkushev Kirill)
  */
-public class AddQueryParamMethod implements Method {
+public class AddQueryParamMethod implements AddParamMethod {
     private QueryParameter param;
     private String name;
     private ReqSpecField req;
@@ -27,6 +28,11 @@ public class AddQueryParamMethod implements Method {
         this.name = name;
         this.req = req;
         this.apiClass = apiClass;
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     @Override
@@ -42,5 +48,13 @@ public class AddQueryParamMethod implements Method {
                 .addStatement("$L.addQueryParam($S, $L)", req.name(), name, sanitized)
                 .addStatement("return this", req.name())
                 .build();
+    }
+
+    public QueryParameter getParam() {
+        return param;
+    }
+
+    public ReqSpecField getReq() {
+        return req;
     }
 }

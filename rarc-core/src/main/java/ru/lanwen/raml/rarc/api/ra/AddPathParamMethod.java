@@ -3,6 +3,7 @@ package ru.lanwen.raml.rarc.api.ra;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.raml.model.parameter.UriParameter;
+import ru.lanwen.raml.rarc.api.AddParamMethod;
 import ru.lanwen.raml.rarc.api.ApiResourceClass;
 import ru.lanwen.raml.rarc.api.Method;
 
@@ -16,7 +17,7 @@ import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
 /**
  * @author lanwen (Merkushev Kirill)
  */
-public class AddPathParamMethod implements Method {
+public class AddPathParamMethod implements AddParamMethod {
     private UriParameter param;
     private String name;
     private ReqSpecField req;
@@ -27,6 +28,11 @@ public class AddPathParamMethod implements Method {
         this.name = name;
         this.req = req;
         this.apiClass = apiClass;
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
     @Override

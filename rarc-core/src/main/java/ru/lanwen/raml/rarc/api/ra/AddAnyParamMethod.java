@@ -2,11 +2,10 @@ package ru.lanwen.raml.rarc.api.ra;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
-import org.raml.model.parameter.FormParameter;
+import org.raml.model.parameter.AbstractParam;
 import org.raml.model.parameter.QueryParameter;
 import ru.lanwen.raml.rarc.api.AddParamMethod;
 import ru.lanwen.raml.rarc.api.ApiResourceClass;
-import ru.lanwen.raml.rarc.api.Method;
 
 import javax.lang.model.element.Modifier;
 
@@ -18,13 +17,13 @@ import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
 /**
  * @author lanwen (Merkushev Kirill)
  */
-public class AddFormParamMethod implements AddParamMethod {
-    private FormParameter param;
+public class AddAnyParamMethod implements AddParamMethod {
+    private AbstractParam param;
     private String name;
     private ReqSpecField req;
     private ApiResourceClass apiClass;
 
-    public AddFormParamMethod(FormParameter param, String name, ReqSpecField req, ApiResourceClass apiClass) {
+    public AddAnyParamMethod(AbstractParam param, String name, ReqSpecField req, ApiResourceClass apiClass) {
         this.param = param;
         this.name = name;
         this.req = req;
@@ -46,16 +45,8 @@ public class AddFormParamMethod implements AddParamMethod {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.bestGuess(apiClass.name()))
                 .addParameter(ClassName.get(String.class), sanitized)
-                .addStatement("$L.addFormParam($S, $L)", req.name(), name, sanitized)
+                .addStatement("$L.addParam($S, $L)", req.name(), name, sanitized)
                 .addStatement("return this", req.name())
                 .build();
-    }
-
-    public FormParameter getParam() {
-        return param;
-    }
-
-    public ReqSpecField getReq() {
-        return req;
     }
 }

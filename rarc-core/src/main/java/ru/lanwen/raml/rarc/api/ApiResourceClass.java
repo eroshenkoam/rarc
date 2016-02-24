@@ -1,21 +1,27 @@
 package ru.lanwen.raml.rarc.api;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import org.apache.commons.lang3.StringUtils;
 import org.raml.model.Resource;
 
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static org.apache.commons.lang3.StringUtils.uncapitalize;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -57,9 +63,18 @@ public class ApiResourceClass {
         TypeSpec.Builder apiClass = TypeSpec.classBuilder(className)
                 .addJavadoc("$L\n", trimToEmpty(resource.getDescription()))
                 .addModifiers(Modifier.PUBLIC);
-        
+
         apiClass.addFields(fields.stream().map(Field::fieldSpec).collect(toList()));
-        apiClass.addMethods(methods.stream().map(Method::methodSpec).collect(toList()));
+
+        List<AddParamMethod> addParamMethods = methods.stream()
+                .filter(method -> method instanceof AddParamMethod)
+                .map(method -> (AddParamMethod) method)
+                .collect(groupingBy(AddParamMethod::name)).entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream().collect(new FormQueryParamsMerge(this)).stream())
+                .collect(toList());
+        apiClass.addMethods(addParamMethods.stream().map(Method::methodSpec).collect(Collectors.toList()));
+        apiClass.addMethods(methods.stream()
+                .filter(method -> !(method instanceof AddParamMethod)).map(Method::methodSpec).collect(toList()));
 
         return JavaFile.builder(basePackage + "." + packageName, apiClass.build()).build();
     }
@@ -79,7 +94,9 @@ public class ApiResourceClass {
     }
 
     public static String sanitize(String string) {
-        return string
+        String underscoresFixed = Splitter.on("_").splitToList(string).stream().map(StringUtils::capitalize)
+                .collect(joining());
+        return uncapitalize(underscoresFixed)
                 .replaceAll("[^A-Za-z\\./]", "")
                 .replaceAll("^/", "")
                 .replaceAll("/$", "");
@@ -97,4 +114,5 @@ public class ApiResourceClass {
 
         return capitalize(name.contains("/") ? substringAfterLast(name, "/") : name);
     }
+
 }
