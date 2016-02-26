@@ -16,6 +16,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * @author lanwen (Merkushev Kirill)
  */
@@ -34,10 +36,14 @@ class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMet
     @Override
     public BiConsumer<List<AddParamMethod>, AddParamMethod> accumulator() {
         return (list, elem) -> {
-            if (elem instanceof AddHeaderMethod) {
-                list.add(elem);
+            
+            // Clear duplicates
+            List<AddParamMethod> collect = list.stream()
+                    .filter(next -> elem.getClass().isInstance(next)).collect(toList());
+            if (!collect.isEmpty()) {
                 return;
             }
+
             if (elem instanceof AddQueryParamMethod) {
                 Optional<AddParamMethod> form = list.stream().filter(item -> item instanceof AddFormParamMethod).findFirst();
                 if (form.isPresent()) {
