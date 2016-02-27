@@ -1,12 +1,11 @@
 package ru.lanwen.raml.rarc.api.ra;
 
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.raml.model.parameter.FormParameter;
-import org.raml.model.parameter.QueryParameter;
 import ru.lanwen.raml.rarc.api.AddParamMethod;
 import ru.lanwen.raml.rarc.api.ApiResourceClass;
-import ru.lanwen.raml.rarc.api.Method;
 
 import javax.lang.model.element.Modifier;
 
@@ -45,7 +44,8 @@ public class AddFormParamMethod implements AddParamMethod {
                 .addJavadoc("@param $L $L\n", sanitized, trimToEmpty(param.getDescription()))
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.bestGuess(apiClass.name()))
-                .addParameter(ClassName.get(String.class), sanitized)
+                .varargs(param.isRepeat())
+                .addParameter(param.isRepeat() ? ArrayTypeName.of(ClassName.get(String.class)) : ClassName.get(String.class), sanitized)
                 .addStatement("$L.addFormParam($S, $L)", req.name(), name, sanitized)
                 .addStatement("return this", req.name())
                 .build();
