@@ -14,6 +14,7 @@ import ru.lanwen.raml.rarc.api.ra.AddFormParamMethod;
 import ru.lanwen.raml.rarc.api.ra.AddHeaderMethod;
 import ru.lanwen.raml.rarc.api.ra.AddPathParamMethod;
 import ru.lanwen.raml.rarc.api.ra.AddQueryParamMethod;
+import ru.lanwen.raml.rarc.api.ra.DefaultsMethod;
 import ru.lanwen.raml.rarc.api.ra.ReqSpecField;
 import ru.lanwen.raml.rarc.api.ra.RespSpecField;
 import ru.lanwen.raml.rarc.api.ra.UriConst;
@@ -77,17 +78,25 @@ public class RestAssuredRamlCodegen {
                             .withField(req)
                             .withField(resp);
 
-                    resource.getUriParameters().forEach((name, uriParameter) ->
-                            apiClass.withMethod(new AddPathParamMethod(uriParameter, name, req, apiClass)));
+                    DefaultsMethod defaultsMethod = new DefaultsMethod(apiClass, req);
+
+                    resource.getUriParameters().forEach((name, uriParameter) -> {
+                        apiClass.withMethod(new AddPathParamMethod(uriParameter, name, req, apiClass));
+                        defaultsMethod.forParamDefaults(name, uriParameter);
+                    });
 
                     resource.getActions().forEach((type, action) -> {
                         apiClass.withMethod(new ActionMethod(req, resp, uri, action));
 
-                        action.getQueryParameters().forEach((name, param) ->
-                                apiClass.withMethod(new AddQueryParamMethod(param, name, req, apiClass)));
+                        action.getQueryParameters().forEach((name, param) -> {
+                            apiClass.withMethod(new AddQueryParamMethod(param, name, req, apiClass));
+                            defaultsMethod.forParamDefaults(name, param);
+                        });
 
-                        action.getHeaders().forEach((name, header) ->
-                                apiClass.withMethod(new AddHeaderMethod(header, name, req, apiClass)));
+                        action.getHeaders().forEach((name, header) -> {
+                            apiClass.withMethod(new AddHeaderMethod(header, name, req, apiClass));
+                            defaultsMethod.forParamDefaults(name, header);
+                        });
 
                         if (action.getBody() != null) {
                             action.getBody().getOrDefault("application/x-www-form-urlencoded", new MimeType()).getFormParameters()
@@ -97,12 +106,14 @@ public class RestAssuredRamlCodegen {
                                         }
                                         LOG.info("Form params for {}: {}", name, formParameters.size());
                                         apiClass.withMethod(new AddFormParamMethod(formParameters.get(0), name, req, apiClass));
+                                        defaultsMethod.forParamDefaults(name, formParameters.get(0));
                                     });
                         }
                     });
 
                     apiClass.withMethod(defaultConstructor(req, resp))
                             .withMethod(specsConstructor(req, resp))
+                            .withMethod(defaultsMethod)
                             .withMethod(changeReq(req, apiClass))
                             .withMethod(changeResp(resp, apiClass));
 
@@ -115,12 +126,11 @@ public class RestAssuredRamlCodegen {
                 })
                 .collect(toList());
 
-
         files.forEach(file -> {
             try {
                 file.writeTo(this.config.getOutputPath());
             } catch (IOException e) {
-                throw new RuntimeException("", e);
+                throw new RuntimeException("Can't write to " + this.config.getOutputPath(), e);
             }
         });
     }
