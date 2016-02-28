@@ -1,6 +1,11 @@
 package ru.lanwen.raml.rarc;
 
+import com.squareup.javapoet.ArrayTypeName;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
+import org.apache.commons.lang3.StringUtils;
 import org.raml.model.MimeType;
 import org.raml.model.Raml;
 import org.raml.model.Resource;
@@ -22,6 +27,7 @@ import ru.lanwen.raml.rarc.api.ra.root.NestedConfigClass;
 import ru.lanwen.raml.rarc.api.ra.root.ReqSpecSupplField;
 import ru.lanwen.raml.rarc.api.ra.root.RootApiClase;
 
+import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,6 +36,10 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.capitalize;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
 import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeReq;
 import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeResp;
 import static ru.lanwen.raml.rarc.api.ra.Constructors.defaultConstructor;
@@ -91,6 +101,40 @@ public class RestAssuredRamlCodegen {
                         action.getQueryParameters().forEach((name, param) -> {
                             apiClass.withMethod(new AddQueryParamMethod(param, name, req, apiClass));
                             defaultsMethod.forParamDefaults(name, param);
+                            if (param.getEnumeration() != null && !param.getEnumeration().isEmpty()) {
+                                TypeSpec.Builder enumParam = TypeSpec.enumBuilder(capitalize(sanitize(name)) + "Param")
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .addField(String.class, "value", Modifier.PRIVATE, Modifier.FINAL)
+                                        .addMethod(MethodSpec.methodBuilder("value")
+                                                .addModifiers(Modifier.PUBLIC)
+                                                .returns(String.class)
+                                                .addStatement("return $N", "value")
+                                                .build())
+                                        .addMethod(MethodSpec.constructorBuilder()
+                                                .addParameter(String.class, "value")
+                                                .addStatement("this.$N = $N", "value", "value")
+                                                .build());
+                                param.getEnumeration()
+                                        .forEach(value -> enumParam.addEnumConstant(
+                                                StringUtils.upperCase(sanitize(value)),
+                                                TypeSpec.anonymousClassBuilder("$S", value).build()
+                                        ));
+                                apiClass.withEnum(enumParam.build());
+                                apiClass.withMethod(() -> {
+                                    String sanitized = sanitize(name);
+                                    return MethodSpec.methodBuilder("with" + capitalize(sanitized))
+                                            .addJavadoc("required: $L\n", param.isRequired())
+                                            .addJavadoc("$L\n", isNotEmpty(param.getExample()) ? "example: " + param.getExample() : "")
+                                            .addJavadoc("@param $L $L\n", sanitized, trimToEmpty(param.getDescription()))
+                                            .addModifiers(Modifier.PUBLIC)
+                                            .returns(ClassName.bestGuess(apiClass.name()))
+                                            .varargs(param.isRepeat())
+                                            .addParameter(param.isRepeat() ? ArrayTypeName.of(ClassName.bestGuess(enumParam.build().name)) : ClassName.bestGuess(enumParam.build().name), sanitized)
+                                            .addStatement("$L.addQueryParam($S, $L.value())", req.name(), name, sanitized)
+                                            .addStatement("return this", req.name())
+                                            .build();
+                                });
+                            }
                         });
 
                         action.getHeaders().forEach((name, header) -> {
@@ -107,6 +151,40 @@ public class RestAssuredRamlCodegen {
                                         LOG.info("Form params for {}: {}", name, formParameters.size());
                                         apiClass.withMethod(new AddFormParamMethod(formParameters.get(0), name, req, apiClass));
                                         defaultsMethod.forParamDefaults(name, formParameters.get(0));
+                                        if (formParameters.get(0).getEnumeration() != null && !formParameters.get(0).getEnumeration().isEmpty()) {
+                                            TypeSpec.Builder enumParam = TypeSpec.enumBuilder(capitalize(sanitize(name)) + "Param")
+                                                    .addModifiers(Modifier.PUBLIC)
+                                                    .addField(String.class, "value", Modifier.PRIVATE, Modifier.FINAL)
+                                                    .addMethod(MethodSpec.methodBuilder("value")
+                                                            .addModifiers(Modifier.PUBLIC)
+                                                            .returns(String.class)
+                                                            .addStatement("return $N", "value")
+                                                            .build())
+                                                    .addMethod(MethodSpec.constructorBuilder()
+                                                            .addParameter(String.class, "value")
+                                                            .addStatement("this.$N = $N", "value", "value")
+                                                            .build());
+                                            formParameters.get(0).getEnumeration()
+                                                    .forEach(value -> enumParam.addEnumConstant(
+                                                            StringUtils.upperCase(sanitize(value)),
+                                                            TypeSpec.anonymousClassBuilder("$S", value).build()
+                                                    ));
+                                            apiClass.withEnum(enumParam.build());
+                                            apiClass.withMethod(() -> {
+                                                String sanitized = sanitize(name);
+                                                return MethodSpec.methodBuilder("with" + capitalize(sanitized))
+                                                        .addJavadoc("required: $L\n", formParameters.get(0).isRequired())
+                                                        .addJavadoc("$L\n", isNotEmpty(formParameters.get(0).getExample()) ? "example: " + formParameters.get(0).getExample() : "")
+                                                        .addJavadoc("@param $L $L\n", sanitized, trimToEmpty(formParameters.get(0).getDescription()))
+                                                        .addModifiers(Modifier.PUBLIC)
+                                                        .returns(ClassName.bestGuess(apiClass.name()))
+                                                        .varargs(formParameters.get(0).isRepeat())
+                                                        .addParameter(formParameters.get(0).isRepeat() ? ArrayTypeName.of(ClassName.bestGuess(enumParam.build().name)) : ClassName.bestGuess(enumParam.build().name), sanitized)
+                                                        .addStatement("$L.addQueryParam($S, $L.value())", req.name(), name, sanitized)
+                                                        .addStatement("return this", req.name())
+                                                        .build();
+                                            });
+                                        }
                                     });
                         }
                     });

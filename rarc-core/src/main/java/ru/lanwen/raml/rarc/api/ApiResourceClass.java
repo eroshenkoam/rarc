@@ -34,6 +34,7 @@ public class ApiResourceClass {
 
     private List<Field> fields = new ArrayList<>();
     private List<Method> methods = new ArrayList<>();
+    private List<TypeSpec> enums = new ArrayList<>();
 
     public static ApiResourceClass forResource(Resource resource) {
         ApiResourceClass apiClass = new ApiResourceClass();
@@ -52,6 +53,12 @@ public class ApiResourceClass {
     public ApiResourceClass withField(Field field) {
         checkNotNull(field, "field==null");
         fields.add(field);
+        return this;
+    }
+
+    public ApiResourceClass withEnum(TypeSpec en) {
+        checkNotNull(en, "field==null");
+        enums.add(en);
         return this;
     }
 
@@ -75,6 +82,8 @@ public class ApiResourceClass {
         apiClass.addMethods(addParamMethods.stream().map(Method::methodSpec).collect(Collectors.toList()));
         apiClass.addMethods(methods.stream()
                 .filter(method -> !(method instanceof AddParamMethod)).map(Method::methodSpec).collect(toList()));
+        
+        enums.forEach(apiClass::addType);
 
         return JavaFile.builder(basePackage + "." + packageName, apiClass.build()).build();
     }
