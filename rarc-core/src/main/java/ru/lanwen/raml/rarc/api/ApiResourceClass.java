@@ -105,10 +105,12 @@ public class ApiResourceClass {
     public static String sanitize(String string) {
         String underscoresFixed = Splitter.on("_").splitToList(string).stream().map(StringUtils::capitalize)
                 .collect(joining());
-        return uncapitalize(underscoresFixed)
-                .replaceAll("[^A-Za-z\\./]", "")
+        String identifier = uncapitalize(underscoresFixed)
+                .replaceAll("[^A-Za-z1-9\\./]", "")
+                .replaceAll("^([1-9]+)", "_$1")
                 .replaceAll("^/", "")
                 .replaceAll("/$", "");
+        return identifier;
     }
 
     private static String classPart(Resource resource) {
