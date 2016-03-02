@@ -93,7 +93,8 @@ public class RestAssuredRamlCodegen {
                     resource.getUriParameters().forEach((name, uriParameter) -> {
                         apiClass.withMethod(new AddPathParamMethod(uriParameter, name, req, apiClass));
                         defaultsMethod.forParamDefaults(name, uriParameter);
-                    });
+                    });            //TODO выносить имена параметров в константы
+                                  // TODO булевые и интежер типы
 
                     resource.getActions().forEach((type, action) -> {
                         apiClass.withMethod(new ActionMethod(req, resp, uri, action));
@@ -120,6 +121,7 @@ public class RestAssuredRamlCodegen {
                                                 TypeSpec.anonymousClassBuilder("$S", value).build()
                                         ));
                                 apiClass.withEnum(enumParam.build());
+                                // для энума
                                 apiClass.withMethod(() -> {
                                     String sanitized = sanitize(name);
                                     return MethodSpec.methodBuilder("with" + capitalize(sanitized))
@@ -171,6 +173,7 @@ public class RestAssuredRamlCodegen {
                                                     ));
                                             apiClass.withEnum(enumParam.build());
                                             apiClass.withMethod(() -> {
+                                                // для энума
                                                 String sanitized = sanitize(name);
                                                 return MethodSpec.methodBuilder("with" + capitalize(sanitized))
                                                         .addJavadoc("required: $L\n", formParameters.get(0).isRequired())

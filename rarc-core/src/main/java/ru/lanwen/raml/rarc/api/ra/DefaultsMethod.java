@@ -44,6 +44,8 @@ public class DefaultsMethod implements Method {
                 builder.addStatement("$N.addPathParam($S, $S)", req.name(), name, param.getDefaultValue());
                 break;
             case QUERY:
+                builder.addStatement("$N.addQueryParam($S, $S)", req.name(), name, param.getDefaultValue());
+                break;
             case FORM:
                 builder.addStatement("$N.addParam($S, $S)", req.name(), name, param.getDefaultValue());
                 break;
