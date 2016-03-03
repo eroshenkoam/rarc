@@ -113,7 +113,7 @@ public class ApiResourceClass {
         return identifier;
     }
 
-    private static String classPart(Resource resource) {
+    public static String classPart(Resource resource) {
         if (resource == null) {
             return "";
         }
