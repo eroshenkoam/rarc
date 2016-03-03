@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.raml.model.MimeType;
 import org.raml.model.Raml;
 import org.raml.model.Resource;
+import org.raml.model.parameter.UriParameter;
 import org.raml.parser.loader.FileResourceLoader;
 import org.raml.parser.visitor.RamlDocumentBuilder;
 import org.slf4j.Logger;
@@ -33,7 +34,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -93,7 +96,10 @@ public class RestAssuredRamlCodegen {
                     resource.getUriParameters().forEach((name, uriParameter) -> {
                         apiClass.withMethod(new AddPathParamMethod(uriParameter, name, req, apiClass));
                         defaultsMethod.forParamDefaults(name, uriParameter);
-                    });            //TODO выносить имена параметров в константы
+                    });  
+                    
+                    
+                    //TODO выносить имена параметров в константы
                                   // TODO булевые и интежер типы
 
                     resource.getActions().forEach((type, action) -> {
@@ -217,6 +223,13 @@ public class RestAssuredRamlCodegen {
     }
 
     private static Collection<Resource> fromResource(Resource resource) {
+        // in case of /account/{uid}/options/
+        if (resource.getParentResource() != null && !resource.getParentResource().getUriParameters().isEmpty()) {
+            Map<String, UriParameter> combined = new HashMap<>();
+            combined.putAll(resource.getParentResource().getUriParameters());
+            combined.putAll(resource.getUriParameters());
+            resource.setUriParameters(combined);
+        }
         if (resource.getResources().isEmpty()) {
             return Collections.singleton(resource);
         } else {
