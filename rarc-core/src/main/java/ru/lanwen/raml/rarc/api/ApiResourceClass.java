@@ -91,6 +91,7 @@ public class ApiResourceClass {
     public static String packageName(Resource resource) {
         String packageName = sanitize(resource.getUri())
                 .toLowerCase()
+                .replace("//", "/")
                 .replace("/", ".");
 
         Preconditions.checkArgument(SourceVersion.isName(packageName), "%s is wrong package name", packageName);

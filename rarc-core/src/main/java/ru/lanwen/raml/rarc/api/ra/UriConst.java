@@ -24,7 +24,7 @@ public class UriConst implements Field {
     @Override
     public FieldSpec fieldSpec() {
         return FieldSpec.builder(ClassName.get(String.class), name(), Modifier.FINAL, Modifier.STATIC, Modifier.PUBLIC)
-                .initializer("$S", uri)
+                .initializer("$S", uri.replace("//", "/"))
                 .build();
     }
 }
