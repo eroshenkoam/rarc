@@ -15,6 +15,7 @@ import ru.lanwen.raml.rarc.api.ra.*;
 import ru.lanwen.raml.rarc.api.ra.root.NestedConfigClass;
 import ru.lanwen.raml.rarc.api.ra.root.ReqSpecSupplField;
 import ru.lanwen.raml.rarc.api.ra.root.RootApiClase;
+import ru.lanwen.raml.rarc.util.JsonCodegen;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -23,15 +24,14 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.*;
-import static ru.lanwen.raml.rarc.api.ApiResourceClass.enumParam;
-import static ru.lanwen.raml.rarc.api.ApiResourceClass.packageName;
-import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.*;
 import static ru.lanwen.raml.rarc.api.ra.AddJsonBodyMethod.bodyMethod;
 import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeReq;
 import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeResp;
 import static ru.lanwen.raml.rarc.api.ra.Constructors.defaultConstructor;
 import static ru.lanwen.raml.rarc.api.ra.Constructors.specsConstructor;
 import static ru.lanwen.raml.rarc.api.ra.NextResourceMethods.childResource;
+import static ru.lanwen.raml.rarc.util.JsonCodegenConfig.jsonCodegenConfig;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -193,6 +193,23 @@ public class RestAssuredRamlCodegen {
                                                 .returns(apiClass.name()));
                             }
                         }
+
+                        action.getResponses().values().forEach(response -> {
+                            if (response.hasBody() && response.getBody().containsKey("application/json")) {
+                                MimeType jsonBody = response.getBody().get("application/json");
+                                try {
+                                    new JsonCodegen(
+                                            jsonCodegenConfig()
+                                                    .withJsonSchemaPath(jsonBody.getCompiledSchema().toString())
+                                                    .withPackageName(config.getBasePackage() + "." + packageName(resource) + ".responses")
+                                                    .withInputPath(config.getInputPath().getParent())
+                                                    .withOutputPath(config.getOutputPath())
+                                    ).generate();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                     });
 
                     // TODO: default как название параметра
