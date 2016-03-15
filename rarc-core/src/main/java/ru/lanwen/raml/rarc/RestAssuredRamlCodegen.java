@@ -42,6 +42,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.enumParam;
 import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
 import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeReq;
 import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeResp;
@@ -96,11 +97,11 @@ public class RestAssuredRamlCodegen {
                     resource.getUriParameters().forEach((name, uriParameter) -> {
                         apiClass.withMethod(new AddPathParamMethod(uriParameter, name, req, apiClass));
                         defaultsMethod.forParamDefaults(name, uriParameter);
-                    });  
-                    
-                    
+                    });
+
+
                     //TODO выносить имена параметров в константы
-                                  // TODO булевые и интежер типы
+                    // TODO булевые и интежер типы
 
                     resource.getActions().forEach((type, action) -> {
                         apiClass.withMethod(new ActionMethod(req, resp, uri, action));
@@ -123,7 +124,7 @@ public class RestAssuredRamlCodegen {
                                                 .build());
                                 param.getEnumeration()
                                         .forEach(value -> enumParam.addEnumConstant(
-                                                StringUtils.upperCase(sanitize(value)),
+                                                enumParam(value),
                                                 TypeSpec.anonymousClassBuilder("$S", value).build()
                                         ));
                                 apiClass.withEnum(enumParam.build());
@@ -198,6 +199,7 @@ public class RestAssuredRamlCodegen {
                         }
                     });
 
+                    // TODO: default как название параметра
                     apiClass.withMethod(defaultConstructor(req, resp))
                             .withMethod(specsConstructor(req, resp))
                             .withMethod(defaultsMethod)
