@@ -197,16 +197,19 @@ public class RestAssuredRamlCodegen {
                         action.getResponses().values().forEach(response -> {
                             if (response.hasBody() && response.getBody().containsKey("application/json")) {
                                 MimeType jsonBody = response.getBody().get("application/json");
-                                try {
-                                    new JsonCodegen(
-                                            jsonCodegenConfig()
-                                                    .withJsonSchemaPath(jsonBody.getCompiledSchema().toString())
-                                                    .withPackageName(config.getBasePackage() + "." + packageName(resource) + ".responses")
-                                                    .withInputPath(config.getInputPath().getParent())
-                                                    .withOutputPath(config.getOutputPath())
-                                    ).generate();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                if (jsonBody.getCompiledSchema() != null) {
+                                    try {
+                                        new JsonCodegen(
+                                                jsonCodegenConfig()
+                                                        .withJsonSchemaPath(jsonBody.getCompiledSchema().toString())
+                                                        .withPackageName(config.getBasePackage() + "." + packageName(resource) + ".responses")
+                                                        .withInputPath(config.getInputPath().getParent())
+                                                        .withOutputPath(config.getOutputPath())
+                                        ).generate();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
                                 }
                             }
                         });
