@@ -2,6 +2,7 @@ package ru.lanwen.raml.rarc;
 
 import com.squareup.javapoet.*;
 import org.apache.commons.lang3.StringUtils;
+import org.raml.model.MimeType;
 import org.raml.model.Raml;
 import org.raml.model.Resource;
 import org.raml.model.parameter.UriParameter;
@@ -22,7 +23,9 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.*;
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.packageName;
 import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
+import static ru.lanwen.raml.rarc.api.ra.AddJsonBodyMethod.bodyMethod;
 import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeReq;
 import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeResp;
 import static ru.lanwen.raml.rarc.api.ra.Constructors.defaultConstructor;
@@ -175,9 +178,17 @@ public class RestAssuredRamlCodegen {
                                                 });
                                             }
                                         });
-                            } else {
+                            } else if (action.getBody().containsKey("application/json")) {
+                                MimeType jsonBody = action.getBody().get("application/json");
                                 apiClass.withMethod(
-                                        new AddBodyMethod(action.getBody().get("application/json"), req, apiClass));
+                                        bodyMethod()
+                                                .withShema(jsonBody.getCompiledSchema())
+                                                .withExample(jsonBody.getExample())
+                                                .withReqName(req.name())
+                                                .withInputPathForJsonGen(config.getInputPath().getParent())
+                                                .withOutputPathForJsonGen(config.getOutputPath())
+                                                .withPackageForJsonGen(config.getBasePackage() + "." + packageName(resource))
+                                                .returns(apiClass.name()));
                             }
 
                         }
