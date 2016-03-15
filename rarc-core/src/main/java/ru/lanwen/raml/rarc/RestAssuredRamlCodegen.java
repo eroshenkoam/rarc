@@ -16,6 +16,7 @@ import ru.lanwen.raml.rarc.api.ra.root.NestedConfigClass;
 import ru.lanwen.raml.rarc.api.ra.root.ReqSpecSupplField;
 import ru.lanwen.raml.rarc.api.ra.root.RootApiClase;
 import ru.lanwen.raml.rarc.util.JsonCodegen;
+import ru.lanwen.raml.rarc.util.ResponseParserClass;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import static ru.lanwen.raml.rarc.api.ra.Constructors.defaultConstructor;
 import static ru.lanwen.raml.rarc.api.ra.Constructors.specsConstructor;
 import static ru.lanwen.raml.rarc.api.ra.NextResourceMethods.childResource;
 import static ru.lanwen.raml.rarc.util.JsonCodegenConfig.jsonCodegenConfig;
+import static ru.lanwen.raml.rarc.util.ResponseParserClass.respParserForResource;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -194,18 +196,21 @@ public class RestAssuredRamlCodegen {
                             }
                         }
 
+                        ResponseParserClass parser = respParserForResource(resource);
                         action.getResponses().values().forEach(response -> {
                             if (response.hasBody() && response.getBody().containsKey("application/json")) {
                                 MimeType jsonBody = response.getBody().get("application/json");
                                 if (jsonBody.getCompiledSchema() != null) {
                                     try {
-                                        new JsonCodegen(
+                                        String respClass = new JsonCodegen(
                                                 jsonCodegenConfig()
                                                         .withJsonSchemaPath(jsonBody.getCompiledSchema().toString())
                                                         .withPackageName(config.getBasePackage() + "." + packageName(resource) + ".responses")
                                                         .withInputPath(config.getInputPath().getParent())
                                                         .withOutputPath(config.getOutputPath())
                                         ).generate();
+                                        if(!parser.containsParser(respClass)) parser.addParser(respClass);
+
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
@@ -213,6 +218,14 @@ public class RestAssuredRamlCodegen {
                                 }
                             }
                         });
+
+                        try {
+                            if(!parser.isEmpty()){
+                                parser.javaFile(config.getBasePackage()).writeTo(config.getOutputPath());
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException("Can't write to " + this.config.getOutputPath(), e);
+                        }
                     });
 
                     // TODO: default как название параметра
