@@ -99,6 +99,19 @@
                 <scope>test</scope>
             </dependency>
 
+            <dependency>
+                <groupId>com.tngtech.java</groupId>
+                <artifactId>junit-dataprovider</artifactId>
+                <scope>test</scope>
+                <version>1.10.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-core</artifactId>
+                <version>0.4.21</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
