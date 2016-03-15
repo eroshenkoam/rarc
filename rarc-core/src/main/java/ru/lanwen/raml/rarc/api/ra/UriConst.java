@@ -6,9 +6,6 @@ import ru.lanwen.raml.rarc.api.Field;
 
 import javax.lang.model.element.Modifier;
 
-import static org.apache.commons.lang3.StringUtils.contains;
-import static org.apache.commons.lang3.StringUtils.endsWith;
-
 /**
  * @author lanwen (Merkushev Kirill)
  */
@@ -27,7 +24,7 @@ public class UriConst implements Field {
     @Override
     public FieldSpec fieldSpec() {
         return FieldSpec.builder(ClassName.get(String.class), name(), Modifier.FINAL, Modifier.STATIC, Modifier.PUBLIC)
-                .initializer("$S", endsWith(uri, "/") || contains(uri, "?") ? uri : uri + "/")
+                .initializer("$S", uri.replace("//", "/"))
                 .build();
     }
 }

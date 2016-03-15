@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
+import static org.apache.commons.lang3.StringUtils.upperCase;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -91,6 +92,7 @@ public class ApiResourceClass {
     public static String packageName(Resource resource) {
         String packageName = sanitize(resource.getUri())
                 .toLowerCase()
+                .replace("//", "/")
                 .replace("/", ".");
 
         Preconditions.checkArgument(SourceVersion.isName(packageName), "%s is wrong package name", packageName);
@@ -111,6 +113,15 @@ public class ApiResourceClass {
                 .replaceAll("^/", "")
                 .replaceAll("/$", "");
         return identifier;
+    }
+
+    public static String enumParam(String string) {
+        String identifier = string
+                .replaceAll("[^A-Za-z1-9_\\./]", "")
+                .replaceAll("^([1-9]+)", "_$1")
+                .replaceAll("^/", "")
+                .replaceAll("/$", "");
+        return upperCase(identifier);
     }
 
     public static String classPart(Resource resource) {
