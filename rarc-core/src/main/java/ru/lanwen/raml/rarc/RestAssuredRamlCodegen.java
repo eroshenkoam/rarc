@@ -209,10 +209,12 @@ public class RestAssuredRamlCodegen {
                                                         .withInputPath(config.getInputPath().getParent())
                                                         .withOutputPath(config.getOutputPath())
                                         ).generate();
-                                        if(!parser.containsParser(respClass)) parser.addParser(respClass);
+                                        if(!parser.containsParser(respClass)) {
+                                            parser.addParser(respClass);
+                                        }
 
                                     } catch (IOException e) {
-                                        e.printStackTrace();
+                                        throw new RuntimeException("Can't generate code for response: " + resource.getUri(), e);
                                     }
 
                                 }
