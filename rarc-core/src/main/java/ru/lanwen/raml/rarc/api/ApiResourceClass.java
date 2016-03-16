@@ -3,6 +3,7 @@ package ru.lanwen.raml.rarc.api;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.NameAllocator;
 import com.squareup.javapoet.TypeSpec;
 import org.apache.commons.lang3.StringUtils;
 import org.raml.model.Resource;
@@ -83,7 +84,7 @@ public class ApiResourceClass {
         apiClass.addMethods(addParamMethods.stream().map(Method::methodSpec).collect(Collectors.toList()));
         apiClass.addMethods(methods.stream()
                 .filter(method -> !(method instanceof AddParamMethod)).map(Method::methodSpec).collect(toList()));
-        
+
         enums.forEach(apiClass::addType);
 
         return JavaFile.builder(basePackage + "." + packageName, apiClass.build()).build();
@@ -108,17 +109,26 @@ public class ApiResourceClass {
         String underscoresFixed = Splitter.on("_").splitToList(string).stream().map(StringUtils::capitalize)
                 .collect(joining());
         String identifier = uncapitalize(underscoresFixed)
-                .replaceAll("[^A-Za-z1-9\\./]", "")
-                .replaceAll("^([1-9]+)", "_$1")
+                .replaceAll("[^A-Za-z0-9\\./]", "")
+                .replaceAll("^([0-9]+)", "_$1")
                 .replaceAll("^/", "")
                 .replaceAll("/$", "");
         return identifier;
     }
 
+    public static String sanitizeParamName(String string) {
+        String underscoresFixed = Splitter.on("_").splitToList(string).stream().map(StringUtils::capitalize)
+                .collect(joining());
+        String identifier = uncapitalize(underscoresFixed)
+                .replaceAll("[^A-Za-z0-9]", "")
+                .replaceAll("^([0-9]+)", "_$1");
+        return new NameAllocator().newName(identifier);
+    }
+
     public static String enumParam(String string) {
         String identifier = string
-                .replaceAll("[^A-Za-z1-9_\\./]", "")
-                .replaceAll("^([1-9]+)", "_$1")
+                .replaceAll("[^A-Za-z0-9_\\./]", "")
+                .replaceAll("^([0-9]+)", "_$1")
                 .replaceAll("^/", "")
                 .replaceAll("/$", "");
         return upperCase(identifier);

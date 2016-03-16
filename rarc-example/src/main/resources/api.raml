@@ -7,9 +7,13 @@ traits: !include /traits.yaml
     displayName: fetch
     description: Fetch list
     queryParameters:
+      default:
+        description: java reserved word "default"
+      if:
+        description: java reserved word "if"
       enumparam:
         description: enum parameter with one underscored
-        enum: [one, 2, underscored_param]
+        enum: [one, 2, underscored_param, for]
       boolparam:
         description: boolean parameter
         type: boolean
@@ -21,6 +25,8 @@ traits: !include /traits.yaml
         description: param with default value
         type: string
         default: default value
+      _dotted_param.0:
+        description: param with dot and digit in name
     responses:
       200:
         body:

@@ -12,7 +12,7 @@ import javax.lang.model.element.Modifier;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
-import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitizeParamName;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -37,8 +37,8 @@ public class AddQueryParamMethod implements AddParamMethod {
 
     @Override
     public MethodSpec methodSpec() {
-        String sanitized = sanitize(name);
-        return MethodSpec.methodBuilder("with" + capitalize(sanitized))
+        String sanitized = sanitizeParamName(name);
+        return MethodSpec.methodBuilder(sanitizeParamName("with" + capitalize(sanitized)))
                 .addJavadoc("required: $L\n", param.isRequired())
                 .addJavadoc("$L\n", isNotEmpty(param.getExample()) ? "example: " + param.getExample() : "")
                 .addJavadoc("@param $L $L\n", sanitized, trimToEmpty(param.getDescription()))
