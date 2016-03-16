@@ -88,7 +88,7 @@ public class AddJsonBodyMethod implements Method {
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.bestGuess(bodyClassName), "body")
                 .returns(ClassName.bestGuess(returnClassName))
-                .addStatement("$L.addHeader(\"Content-Type\", \"application/json\")", reqName)
+                .addStatement("$L.addHeader($S, $S)", reqName, "Content-Type", "application/json")
                 .addStatement("$L.setBody(new $T().toJson(body))", reqName, Gson.class)
                 .addStatement("return this", reqName)
                 .build();
