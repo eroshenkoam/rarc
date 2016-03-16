@@ -1,20 +1,26 @@
 title: Example
 baseUri: https://api.example.com
 traits: !include /traits.yaml
-/groups:
+/jsonapi:
   is: [authorized-by-token]
   get:
-    description: Group list
+    displayName: fetch
+    description: Fetch list
     queryParameters:
-      id:
-        description: group id
+      enumparam:
+        description: enum parameter with one underscored
+        enum: [one, 2, underscored_param]
+      boolparam:
+        description: boolean parameter
+        type: boolean
+      required_param:
+        description: required string param
         type: string
-      type:
-        description: group type
+        required: true
+      with_default_param:
+        description: param with default value
         type: string
-      admin_uid:
-        description: admin user id
-        type: string
+        default: default value
     responses:
       200:
         body:
@@ -33,13 +39,13 @@ traits: !include /traits.yaml
         description: Group is already exist
       422:
         description: Validation error
-  /{group_id}:
+  /{uri_param}:
     uriParameters:
-      group_id:
-        description: group id
+      uri_param:
+        description: integer param
         type: integer
     delete:
-      description: Group deletion
+      description: Deletion
       responses:
         200:
           description: Group is deleted
@@ -60,19 +66,33 @@ traits: !include /traits.yaml
           body:
             application/json:
               schema: !include schemas/messageResp.json
-/auth:
-  description: https://wiki.example.com/auth/
+/rpc_api:
+  description: Some rpc deep api
+  /{uid}/:
+    uriParameters:
+      uid:
+        description: integer param
+        type: integer
+    /info/:
+      description: in the middle of the path - template, ends with slash
+      get:    
   /password:
     displayName: password
+    description: this lvl has display name
     /submit:
       displayName: submit
       description: |
+        ## link
         https://wiki.example.com/auth/#initialization
+      get:
+        queryParameters:
+          duplicated_param:
+            description: this param duplicated in get and post
       post:
         body:
           application/x-www-form-urlencoded:
             formParameters:
-              login:
-              password:
-              policy:
-                enum: [long, sessional]
+              duplicated_param:
+                description: this param duplicated in post and get
+              form_param:
+                description: clean form param
