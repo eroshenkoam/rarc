@@ -36,6 +36,11 @@ public class JsonCodegen {
             public SourceType getSourceType() {
                 return SourceType.JSON;
             }
+
+            @Override
+            public boolean isUseLongIntegers() {
+                return true;
+            }
         };
 
         SchemaMapper mapper = new SchemaMapper(
