@@ -1,0 +1,78 @@
+title: Example
+baseUri: https://api.example.com
+traits: !include /traits.yaml
+/groups:
+  is: [authorized-by-token]
+  get:
+    description: Group list
+    queryParameters:
+      id:
+        description: group id
+        type: string
+      type:
+        description: group type
+        type: string
+      admin_uid:
+        description: admin user id
+        type: string
+    responses:
+      200:
+        body:
+          application/json:
+            schema: !include schemas/groupResp.json
+  post:
+    description: Создание группы
+    body:
+      application/json:
+        schema: !include schemas/group.json
+    responses:
+      201:
+        description: |
+          Group is created
+      409:
+        description: Group is already exist
+      422:
+        description: Validation error
+  /{group_id}:
+    uriParameters:
+      group_id:
+        description: group id
+        type: integer
+    delete:
+      description: Group deletion
+      responses:
+        200:
+          description: Group is deleted
+        422:
+          description: Deletion is forbidden
+    get:
+      description: Get group data
+    patch:
+      description: Change group data
+      body:
+        application/json:
+          schema: !include schemas/group.json
+      responses:
+        200:
+          description: Data is changed.
+        422:
+          description: Validation error
+          body:
+            application/json:
+              schema: !include schemas/messageResp.json
+/auth:
+  description: https://wiki.example.com/auth/
+  /password:
+    displayName: password
+    /submit:
+      displayName: submit
+      description: |
+        https://wiki.example.com/auth/#initialization
+      post:
+        body:
+          application/x-www-form-urlencoded:
+            formParameters:
+              login:
+              password:
+              policy:
+                enum: [long, sessional]

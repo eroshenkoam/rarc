@@ -1,0 +1,5 @@
+- authorized-by-token:
+    headers: 
+      Authorization:
+        description: token {token}
+        default: token ldfklwklqsijcwe

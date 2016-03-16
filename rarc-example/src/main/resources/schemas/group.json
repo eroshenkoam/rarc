@@ -1,0 +1,18 @@
+{
+  "members_count": 0,
+  "description": {
+    "en": "string"
+  },
+  "created": "2016-03-03T14:30:29.219Z",
+  "members": [
+    {
+      "type": "user",
+      "id": 0
+    }
+  ],
+  "id": 0,
+  "type": "generic",
+  "name": {
+    "en": "string"
+  }
+}
