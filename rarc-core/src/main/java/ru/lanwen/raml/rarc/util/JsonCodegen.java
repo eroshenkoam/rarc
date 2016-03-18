@@ -1,5 +1,6 @@
 package ru.lanwen.raml.rarc.util;
 
+import com.jayway.restassured.path.json.JsonPath;
 import com.sun.codemodel.JCodeModel;
 import org.jsonschema2pojo.*;
 import org.jsonschema2pojo.rules.RuleFactory;
@@ -34,6 +35,9 @@ public class JsonCodegen {
 
             @Override
             public SourceType getSourceType() {
+                if(JsonPath.from(source).get("$schema") != null) {
+                    return SourceType.JSONSCHEMA;
+                }
                 return SourceType.JSON;
             }
 
