@@ -5,8 +5,6 @@ import com.squareup.javapoet.MethodSpec;
 import org.raml.model.Resource;
 
 import static javax.lang.model.element.Modifier.PUBLIC;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static ru.lanwen.raml.rarc.api.ApiResourceClass.className;
 import static ru.lanwen.raml.rarc.api.ApiResourceClass.classPart;
@@ -18,7 +16,7 @@ import static ru.lanwen.raml.rarc.api.ApiResourceClass.packageName;
 public class NextResourceMethods {
     
     public static MethodSpec baseResource(Resource resource, String basePackage, String confFName, String reqSupplFName) {
-        return MethodSpec.methodBuilder(uncapitalize(substringAfter(className(resource), "Api")))
+        return MethodSpec.methodBuilder(uncapitalize(classPart(resource)))
                 .returns(ClassName.get(basePackage + "." + packageName(resource), className(resource)))
                 .addStatement("return new $N($N.$N.get())", className(resource), confFName, reqSupplFName)
                 .addModifiers(PUBLIC)
@@ -26,9 +24,7 @@ public class NextResourceMethods {
     }
  
     public static MethodSpec childResource(Resource resource, String basePackage, String reqSpecFName) {
-        String methodName = uncapitalize(isNotEmpty(resource.getDisplayName()) 
-                ? classPart(resource) 
-                : substringAfter(className(resource), "Api"));
+        String methodName = uncapitalize(classPart(resource));
         
         return MethodSpec.methodBuilder(methodName)
                 .returns(ClassName.get(basePackage + "." + packageName(resource), className(resource)))
