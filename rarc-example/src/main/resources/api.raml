@@ -94,6 +94,7 @@ traits: !include /traits.yaml
         queryParameters:
           duplicated_param:
             description: this param duplicated in get and post
+            required: true
       post:
         body:
           application/x-www-form-urlencoded:
@@ -102,3 +103,6 @@ traits: !include /traits.yaml
                 description: this param duplicated in post and get
               form_param:
                 description: clean form param
+              enumparam_in_form:
+                description: enum parameter in form parameters should not became query parameter
+                enum: [one, 2, underscored_param, for]
