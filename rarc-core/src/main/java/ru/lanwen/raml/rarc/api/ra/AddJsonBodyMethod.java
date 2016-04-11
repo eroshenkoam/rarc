@@ -1,6 +1,6 @@
 package ru.lanwen.raml.rarc.api.ra;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import org.apache.commons.io.FileUtils;
@@ -18,7 +18,7 @@ import static ru.lanwen.raml.rarc.util.JsonCodegenConfig.jsonCodegenConfig;
 /**
  * Created by stassiak
  */
-public class AddJsonBodyMethod implements Method {
+public class    AddJsonBodyMethod implements Method {
     private String reqName;
     private String returnClassName;
     private Path inputPathForJsonGen;
@@ -89,7 +89,7 @@ public class AddJsonBodyMethod implements Method {
                 .addParameter(ClassName.bestGuess(bodyClassName), "body")
                 .returns(ClassName.bestGuess(returnClassName))
                 .addStatement("$L.addHeader($S, $S)", reqName, "Content-Type", "application/json")
-                .addStatement("$L.setBody(new $T().toJson(body))", reqName, Gson.class)
+                .addStatement("$L.setBody(new $T().serializeNulls().create().toJson(body))", reqName, GsonBuilder.class)
                 .addStatement("return this", reqName)
                 .build();
     }
