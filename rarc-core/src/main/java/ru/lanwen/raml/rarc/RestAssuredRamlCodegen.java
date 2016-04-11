@@ -88,6 +88,7 @@ public class RestAssuredRamlCodegen {
                     //TODO выносить имена параметров в константы
                     // TODO булевые и интежер типы
 
+                    ResponseParserClass parser = respParserForResource(resource);
                     resource.getActions().forEach((type, action) -> {
                         apiClass.withMethod(new ActionMethod(req, resp, uri, action));
 
@@ -196,7 +197,6 @@ public class RestAssuredRamlCodegen {
                             }
                         }
 
-                        ResponseParserClass parser = respParserForResource(resource);
                         action.getResponses().values().forEach(response -> {
                             if (response.hasBody() && response.getBody().containsKey("application/json")) {
                                 MimeType jsonBody = response.getBody().get("application/json");
