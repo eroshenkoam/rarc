@@ -1,8 +1,5 @@
 package ru.lanwen.raml.rarc;
 
-import com.squareup.javapoet.*;
-import org.apache.commons.lang3.StringUtils;
-import org.raml.model.MimeType;
 import org.raml.model.Raml;
 import org.raml.model.Resource;
 import org.raml.model.parameter.UriParameter;
@@ -10,30 +7,11 @@ import org.raml.parser.loader.FileResourceLoader;
 import org.raml.parser.visitor.RamlDocumentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.lanwen.raml.rarc.api.ApiResourceClass;
-import ru.lanwen.raml.rarc.api.ra.*;
-import ru.lanwen.raml.rarc.api.ra.root.NestedConfigClass;
-import ru.lanwen.raml.rarc.api.ra.root.ReqSpecSupplField;
-import ru.lanwen.raml.rarc.api.ra.root.RootApiClase;
-import ru.lanwen.raml.rarc.util.JsonCodegen;
-import ru.lanwen.raml.rarc.util.ResponseParserClass;
+import ru.lanwen.raml.rarc.rules.RuleFactory;
 
-import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.*;
-import static ru.lanwen.raml.rarc.api.ApiResourceClass.*;
-import static ru.lanwen.raml.rarc.api.ra.AddJsonBodyMethod.bodyMethod;
-import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeReq;
-import static ru.lanwen.raml.rarc.api.ra.ChangeSpecsMethods.changeResp;
-import static ru.lanwen.raml.rarc.api.ra.Constructors.defaultConstructor;
-import static ru.lanwen.raml.rarc.api.ra.Constructors.specsConstructor;
-import static ru.lanwen.raml.rarc.api.ra.NextResourceMethods.childResource;
-import static ru.lanwen.raml.rarc.util.JsonCodegenConfig.jsonCodegenConfig;
-import static ru.lanwen.raml.rarc.util.ResponseParserClass.respParserForResource;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -56,8 +34,9 @@ public class RestAssuredRamlCodegen {
         }
 
         Raml raml = new RamlDocumentBuilder(new FileResourceLoader(path.getParent().toFile())).build(path.getFileName().toString());
+        new RuleFactory(config).getRamlRule().apply(raml);
 
-        ReqSpecField req = new ReqSpecField();
+        /*ReqSpecField req = new ReqSpecField();
         RespSpecField resp = new RespSpecField();
 
         ReqSpecSupplField baseReqSpec = new ReqSpecSupplField();
@@ -252,7 +231,7 @@ public class RestAssuredRamlCodegen {
             } catch (IOException e) {
                 throw new RuntimeException("Can't write to " + this.config.getOutputPath(), e);
             }
-        });
+        });    */
     }
 
     private static Collection<Resource> fromResource(Resource resource) {

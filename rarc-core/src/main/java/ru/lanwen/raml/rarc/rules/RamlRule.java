@@ -8,6 +8,7 @@ import ru.lanwen.raml.rarc.api.ra.root.NestedConfigClass;
 import ru.lanwen.raml.rarc.api.ra.root.ReqSpecSupplField;
 import ru.lanwen.raml.rarc.api.ra.root.RootApiClase;
 
+import java.io.IOException;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -15,32 +16,34 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by stassiak
  */
-public class RamlRule implements Rule<Raml, List<JavaFile>>{
+public class RamlRule {
     RuleFactory ruleFactory;
 
     public RamlRule(RuleFactory ruleFactory) {
         this.ruleFactory = ruleFactory;
     }
 
-    @Override
-    public List<JavaFile> apply(Raml raml) {
-        List<JavaFile> generatedJavaFiles = new ArrayList<>();
-        //ReqSpecField req = new ReqSpecField();
-        //RespSpecField resp = new RespSpecField();
-
+    public void apply(Raml raml) throws IOException {
         ReqSpecSupplField baseReqSpec = new ReqSpecSupplField();
         NestedConfigClass nestedConfigClass = new NestedConfigClass(raml.getTitle(), baseReqSpec, ruleFactory.getReq());
 
-        generatedJavaFiles.add(new RootApiClase(nestedConfigClass)
-                .javaFile(raml, ruleFactory.getCodegenConfig().getBasePackage()));
+        new RootApiClase(nestedConfigClass).javaFile(raml, ruleFactory.getCodegenConfig().getBasePackage())
+                .writeTo(ruleFactory.getCodegenConfig().getOutputPath());
 
+        ArrayList<JavaFile> javaFiles = new ArrayList<>();
         List<Resource> resources = raml.getResources().values().stream()
                 .flatMap(res -> fromResource(res).stream()).collect(toList());
         resources.forEach(resource -> {
-            generatedJavaFiles.add(ruleFactory.getResourseRule().apply(resource));
+            ruleFactory.getResourseRule().apply(resource, javaFiles);
         });
 
-        return null;
+        javaFiles.forEach(file -> {
+            try {
+                file.writeTo(ruleFactory.getCodegenConfig().getOutputPath());
+            } catch (IOException e) {
+                throw new RuntimeException("Can't write to " + ruleFactory.getCodegenConfig().getOutputPath(), e);
+            }
+        });
     }
 
     private Collection<Resource> fromResource(Resource resource) {

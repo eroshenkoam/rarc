@@ -21,5 +21,5 @@ public interface Rule<T, R> {
      * @return the newly generated source code item that was added/created as a
      *         result of executing this rule
      */
-    R apply(T generatableType);
+    void apply(T generatableType, R appliedType);
 }
