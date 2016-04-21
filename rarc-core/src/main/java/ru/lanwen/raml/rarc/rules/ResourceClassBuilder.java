@@ -73,14 +73,14 @@ public class ResourceClassBuilder {
     }
 
     public void generate() {
-        resource.getResources().values().stream().forEach(generateResourseClasses);
-
         if (resource.getParentResource() != null && !resource.getParentResource().getUriParameters().isEmpty()) {
             Map<String, UriParameter> combined = new HashMap<>();
             combined.putAll(resource.getParentResource().getUriParameters());
             combined.putAll(resource.getUriParameters());
             resource.setUriParameters(combined);
         }
+
+        resource.getResources().values().stream().forEach(generateResourseClasses);
 
         uri = new UriConst(resource.getUri());
         apiClass = ApiResourceClass.forResource(resource)
