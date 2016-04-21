@@ -1,7 +1,6 @@
 package ru.lanwen.raml.rarc.rules;
 
 import org.raml.model.MimeType;
-import ru.lanwen.raml.rarc.rules.RuleFactory.ResourceClassBuilder;
 import ru.lanwen.raml.rarc.util.JsonCodegen;
 
 import java.io.IOException;
@@ -13,7 +12,7 @@ import static ru.lanwen.raml.rarc.util.JsonCodegenConfig.jsonCodegenConfig;
 /**
  * Created by stassiak
  */
-public class ResponseRule implements Rule<MimeType, ResourceClassBuilder>{
+public class ResponseRule implements Rule<MimeType>{
     RuleFactory ruleFactory;
 
     public ResponseRule(RuleFactory ruleFactory) {
@@ -34,8 +33,8 @@ public class ResponseRule implements Rule<MimeType, ResourceClassBuilder>{
                                         .withInputPath(ruleFactory.getCodegenConfig().getInputPath().getParent())
                                         .withOutputPath(ruleFactory.getCodegenConfig().getOutputPath())
                         ).generate();
-                        if(!resourceClassBuilder.getResponseParserClass().containsParser(respClass)) {
-                            resourceClassBuilder.getResponseParserClass().addParser(respClass);
+                        if(!resourceClassBuilder.getResponseParser().containsParser(respClass)) {
+                            resourceClassBuilder.getResponseParser().addParser(respClass);
                         }
 
                     } catch (IOException e) {

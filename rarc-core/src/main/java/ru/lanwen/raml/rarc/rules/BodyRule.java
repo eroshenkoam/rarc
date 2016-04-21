@@ -1,7 +1,6 @@
 package ru.lanwen.raml.rarc.rules;
 
 import org.raml.model.MimeType;
-import ru.lanwen.raml.rarc.rules.RuleFactory.ResourceClassBuilder;
 
 import java.util.stream.Stream;
 
@@ -12,7 +11,7 @@ import static ru.lanwen.raml.rarc.rules.BodyRule.MimeTypeEnum.byMimeType;
 /**
  * Created by stassiak
  */
-public class BodyRule implements Rule<MimeType, ResourceClassBuilder> {
+public class BodyRule implements Rule<MimeType> {
     RuleFactory ruleFactory;
 
     public BodyRule(RuleFactory ruleFactory) {
@@ -23,13 +22,7 @@ public class BodyRule implements Rule<MimeType, ResourceClassBuilder> {
     public void apply(MimeType body, ResourceClassBuilder resourceClassBuilder) {
         switch (byMimeType(body)) {
             case FORM:
-                body.getFormParameters()
-                        .forEach((name, formParameters) -> {
-                            formParameters.forEach(formParameter -> {
-                                formParameter.setDisplayName(name);
-                                ruleFactory.getParameterRule().apply(formParameter, resourceClassBuilder);
-                            });
-                        });
+                body.getFormParameters().entrySet().stream().forEach(resourceClassBuilder.applyFormParamsRule);
                 break;
             case JSON:
                 resourceClassBuilder.getApiClass().withMethod(

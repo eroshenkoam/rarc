@@ -4,33 +4,32 @@ import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.raml.model.parameter.QueryParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.lanwen.raml.rarc.api.ra.AddQueryParamMethod;
+import org.apache.commons.lang3.StringUtils;
+import org.raml.model.parameter.FormParameter;
+import ru.lanwen.raml.rarc.api.ra.AddFormParamMethod;
 
 import javax.lang.model.element.Modifier;
 
-import static org.apache.commons.lang3.StringUtils.*;
-import static ru.lanwen.raml.rarc.api.ApiResourceClass.enumParam;
+import static org.apache.commons.lang3.StringUtils.capitalize;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
 
 /**
  * Created by stassiak
  */
-public class QueryParamRule implements Rule<QueryParameter> {
-    private final Logger LOG = LoggerFactory.getLogger(QueryParameter.class);
+public class FormParamRule implements Rule<FormParameter>{
     RuleFactory ruleFactory;
 
-    public QueryParamRule(RuleFactory ruleFactory) {
+    public FormParamRule(RuleFactory ruleFactory) {
         this.ruleFactory = ruleFactory;
     }
 
     @Override
-    public void apply(QueryParameter param, ResourceClassBuilder resourceClassBuilder) {
-        resourceClassBuilder.getApiClass().withMethod(
-                new AddQueryParamMethod(param, param.getDisplayName(), ruleFactory.getReq(),
-                        resourceClassBuilder.getApiClass()));
+    public void apply(FormParameter param, ResourceClassBuilder resourceClassBuilder) {
+        resourceClassBuilder.getApiClass()
+                .withMethod(new AddFormParamMethod(param, param.getDisplayName(),
+                        ruleFactory.getReq(), resourceClassBuilder.getApiClass()));
 
         resourceClassBuilder.getDefaultsMethod().forParamDefaults(param.getDisplayName(), param);
 
@@ -50,12 +49,14 @@ public class QueryParamRule implements Rule<QueryParameter> {
                                     .build());
             param.getEnumeration()
                     .forEach(value -> enumParam.addEnumConstant(
-                            enumParam(value),
+                            StringUtils.upperCase(sanitize(value)),
                             TypeSpec.anonymousClassBuilder("$S", value).build()
                     ));
+
             resourceClassBuilder.getApiClass().withEnum(enumParam.build());
-            // для энума
+
             resourceClassBuilder.getApiClass().withMethod(() -> {
+                // для энума
                 String sanitized = sanitize(param.getDisplayName());
                 return MethodSpec.methodBuilder("with" + capitalize(sanitized))
                         .addJavadoc("required: $L\n", param.isRequired())
@@ -73,6 +74,6 @@ public class QueryParamRule implements Rule<QueryParameter> {
                         .addStatement("return this", ruleFactory.getReq().name())
                         .build();
             });
-        };
+        }
     }
 }

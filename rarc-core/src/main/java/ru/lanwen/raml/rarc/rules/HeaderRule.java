@@ -2,12 +2,11 @@ package ru.lanwen.raml.rarc.rules;
 
 import org.raml.model.parameter.Header;
 import ru.lanwen.raml.rarc.api.ra.AddHeaderMethod;
-import ru.lanwen.raml.rarc.rules.RuleFactory.ResourceClassBuilder;
 
 /**
  * Created by stassiak
  */
-public class HeaderRule implements Rule<Header, ResourceClassBuilder>{
+public class HeaderRule implements Rule<Header>{
     RuleFactory ruleFactory;
 
     public HeaderRule(RuleFactory ruleFactory) {
