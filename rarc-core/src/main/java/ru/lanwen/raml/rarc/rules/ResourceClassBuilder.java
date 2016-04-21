@@ -7,6 +7,7 @@ import org.raml.model.Response;
 import org.raml.model.parameter.FormParameter;
 import org.raml.model.parameter.Header;
 import org.raml.model.parameter.QueryParameter;
+import org.raml.model.parameter.UriParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.lanwen.raml.rarc.api.ApiResourceClass;
@@ -16,7 +17,9 @@ import ru.lanwen.raml.rarc.util.ResponseParserClass;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
@@ -70,6 +73,15 @@ public class ResourceClassBuilder {
     }
 
     public void generate() {
+        resource.getResources().values().stream().forEach(generateResourseClasses);
+
+        if (resource.getParentResource() != null && !resource.getParentResource().getUriParameters().isEmpty()) {
+            Map<String, UriParameter> combined = new HashMap<>();
+            combined.putAll(resource.getParentResource().getUriParameters());
+            combined.putAll(resource.getUriParameters());
+            resource.setUriParameters(combined);
+        }
+
         uri = new UriConst(resource.getUri());
         apiClass = ApiResourceClass.forResource(resource)
                 .withField(uri)
@@ -81,6 +93,10 @@ public class ResourceClassBuilder {
         ruleFactory.getResourseRule().apply(resource, this);
         javaFiles.stream().forEach(writeTo);
     }
+
+    Consumer<Resource> generateResourseClasses = resource -> {
+        new ResourceClassBuilder().withRuleFactory(ruleFactory).withResource(resource).generate();
+    };
 
     Consumer<JavaFile> writeTo = javaFile -> {
         try {

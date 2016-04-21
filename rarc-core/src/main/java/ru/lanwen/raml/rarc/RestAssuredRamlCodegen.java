@@ -2,7 +2,6 @@ package ru.lanwen.raml.rarc;
 
 import org.raml.model.Raml;
 import org.raml.model.Resource;
-import org.raml.model.parameter.UriParameter;
 import org.raml.parser.loader.FileResourceLoader;
 import org.raml.parser.visitor.RamlDocumentBuilder;
 import org.slf4j.Logger;
@@ -15,10 +14,7 @@ import ru.lanwen.raml.rarc.rules.RuleFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.function.Consumer;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -49,32 +45,10 @@ public class RestAssuredRamlCodegen {
         new RootApiClase(nestedConfigClass).javaFile(raml, ruleFactory.getCodegenConfig().getBasePackage())
                 .writeTo(ruleFactory.getCodegenConfig().getOutputPath());
 
-        raml.getResources().values().stream()
-                .flatMap(res -> fromResource(res).stream()).collect(toList()).stream()
-                .forEach(generateResourseClasses);
+        raml.getResources().values().parallelStream().forEach(generateResourseClasses);
     }
 
     Consumer<Resource> generateResourseClasses = resource -> {
         new ResourceClassBuilder().withRuleFactory(ruleFactory).withResource(resource).generate();
     };
-
-    private Collection<Resource> fromResource(Resource resource) {
-        // in case of /account/{uid}/options/
-        if (resource.getParentResource() != null && !resource.getParentResource().getUriParameters().isEmpty()) {
-            Map<String, UriParameter> combined = new HashMap<>();
-            combined.putAll(resource.getParentResource().getUriParameters());
-            combined.putAll(resource.getUriParameters());
-            resource.setUriParameters(combined);
-        }
-        if (resource.getResources().isEmpty()) {
-            return Collections.singleton(resource);
-        } else {
-            List<Resource> all = new ArrayList<>();
-            all.add(resource);
-            for (Resource next : resource.getResources().values()) {
-                all.addAll(fromResource(next));
-            }
-            return all;
-        }
-    }
 }
