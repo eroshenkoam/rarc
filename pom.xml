@@ -112,6 +112,17 @@
                 <version>0.4.21</version>
             </dependency>
 
+            <!--<dependency>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>1.5</version>
+            </dependency>  -->
+            <dependency>
+                <groupId>org.codehaus.castor</groupId>
+                <artifactId>castor-codegen</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

@@ -45,6 +45,8 @@ public class JsonCodegen {
             public boolean isUseLongIntegers() {
                 return true;
             }
+
+
         };
 
         SchemaMapper mapper = new SchemaMapper(

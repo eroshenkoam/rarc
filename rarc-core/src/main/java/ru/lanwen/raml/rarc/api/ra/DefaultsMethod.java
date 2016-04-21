@@ -67,7 +67,7 @@ public class DefaultsMethod implements Method {
         return defaultsMethod.build();
     }
 
-    enum Param {
+    public enum Param {
         URI_PARAM(UriParameter.class),
         QUERY(QueryParameter.class),
         FORM(FormParameter.class),
