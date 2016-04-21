@@ -18,13 +18,11 @@ import static ru.lanwen.raml.rarc.api.ra.NextResourceMethods.childResource;
  */
 public class ResourseRule implements Rule<Resource>{
     private final Logger LOG = LoggerFactory.getLogger(ResourseRule.class);
-    private RuleFactory ruleFactory;
     ReqSpecField req;
     RespSpecField resp;
     CodegenConfig config;
 
     public ResourseRule(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
         this.req = ruleFactory.getReq();
         this.resp = ruleFactory.getResp();
         this.config = ruleFactory.getCodegenConfig();
@@ -34,15 +32,9 @@ public class ResourseRule implements Rule<Resource>{
     public void apply(Resource resource, ResourceClassBuilder resourceClassBuilder) {
         LOG.info("Process resource {}", resource.getUri());
 
-        resource.getUriParameters().forEach((name, uriParameter) -> {
-            uriParameter.setDisplayName(name);
-            ruleFactory.getParameterRule().apply(uriParameter, resourceClassBuilder);
-        });
+        resource.getUriParameters().entrySet().stream().forEach(resourceClassBuilder.applyUriParamRule);
 
-        resource.getActions().forEach((type, action) -> {
-            action.setType(type);
-            ruleFactory.getActionRule().apply(action, resourceClassBuilder);
-        });
+        resource.getActions().entrySet().stream().forEach(resourceClassBuilder.applyActionRule);
 
         // TODO: default как название параметра
         resourceClassBuilder.getApiClass().withMethod(defaultConstructor(req, resp))
@@ -53,7 +45,7 @@ public class ResourseRule implements Rule<Resource>{
 
         resource.getResources().values().stream()
                 .forEach(child -> resourceClassBuilder.getApiClass().withMethod(
-                        () -> childResource(child, this.config.getBasePackage(), req.name())
+                        () -> childResource(child, config.getBasePackage(), req.name())
                 ));
 
         if(!resourceClassBuilder.getResponseParser().isEmpty()){
@@ -62,7 +54,7 @@ public class ResourseRule implements Rule<Resource>{
         }
 
         resourceClassBuilder.getJavaFiles()
-                .add(resourceClassBuilder.getApiClass().javaFile(this.config.getBasePackage()));
+                .add(resourceClassBuilder.getApiClass().javaFile(config.getBasePackage()));
     }
 
 

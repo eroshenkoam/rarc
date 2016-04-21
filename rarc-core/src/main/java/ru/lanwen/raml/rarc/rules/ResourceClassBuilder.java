@@ -1,9 +1,7 @@
 package ru.lanwen.raml.rarc.rules;
 
 import com.squareup.javapoet.JavaFile;
-import org.raml.model.MimeType;
-import org.raml.model.Resource;
-import org.raml.model.Response;
+import org.raml.model.*;
 import org.raml.model.parameter.FormParameter;
 import org.raml.model.parameter.Header;
 import org.raml.model.parameter.QueryParameter;
@@ -48,30 +46,6 @@ public class ResourceClassBuilder {
         return this;
     }
 
-    public ApiResourceClass getApiClass() {
-        return apiClass;
-    }
-
-    public DefaultsMethod getDefaultsMethod() {
-        return defaultsMethod;
-    }
-
-    public UriConst getUri() {
-        return uri;
-    }
-
-    public ResponseParserClass getResponseParser() {
-        return responseParser;
-    }
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public ArrayList<JavaFile> getJavaFiles() {
-        return javaFiles;
-    }
-
     public void generate() {
         if (resource.getParentResource() != null && !resource.getParentResource().getUriParameters().isEmpty()) {
             Map<String, UriParameter> combined = new HashMap<>();
@@ -107,10 +81,21 @@ public class ResourceClassBuilder {
         }
     };
 
+    Consumer<Entry<ActionType, Action>> applyActionRule = entry -> {
+        entry.getValue().setType(entry.getKey());
+        ruleFactory.getActionRule().apply(entry.getValue(), this);
+    };
+
     Consumer<Entry<String, QueryParameter>> applyQueryParamRule = entry -> {
         entry.getValue().setDisplayName(entry.getKey());
         ruleFactory.getParameterRule().apply(entry.getValue(), this);
     };
+
+    Consumer<Entry<String, UriParameter>> applyUriParamRule = entry -> {
+        entry.getValue().setDisplayName(entry.getKey());
+        ruleFactory.getParameterRule().apply(entry.getValue(), this);
+    };
+
     Consumer<Entry<String, Header>> applyHeaderRule = entry -> {
         entry.getValue().setDisplayName(entry.getKey());
         ruleFactory.getHeaderRule().apply(entry.getValue(), this);
@@ -134,4 +119,29 @@ public class ResourceClassBuilder {
             });
         }
     };
+
+    public ApiResourceClass getApiClass() {
+        return apiClass;
+    }
+
+    public DefaultsMethod getDefaultsMethod() {
+        return defaultsMethod;
+    }
+
+    public UriConst getUri() {
+        return uri;
+    }
+
+    public ResponseParserClass getResponseParser() {
+        return responseParser;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public ArrayList<JavaFile> getJavaFiles() {
+        return javaFiles;
+    }
+
 }
