@@ -7,16 +7,11 @@ import ru.lanwen.raml.rarc.api.ra.AddHeaderMethod;
  * Created by stassiak
  */
 public class HeaderRule implements Rule<Header>{
-    RuleFactory ruleFactory;
-
-    public HeaderRule(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
-    }
-
     @Override
     public void apply(Header header, ResourceClassBuilder resourceClassBuilder) {
         resourceClassBuilder.getApiClass()
-                .withMethod(new AddHeaderMethod(header, header.getDisplayName(), ruleFactory.getReq(),
+                .withMethod(new AddHeaderMethod(header, header.getDisplayName(),
+                        resourceClassBuilder.getReq(),
                         resourceClassBuilder.getApiClass()));
         resourceClassBuilder.getDefaultsMethod().forParamDefaults(header.getDisplayName(), header);
     }

@@ -5,8 +5,6 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.raml.model.parameter.QueryParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.lanwen.raml.rarc.api.ra.AddQueryParamMethod;
 
 import javax.lang.model.element.Modifier;
@@ -19,17 +17,10 @@ import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
  * Created by stassiak
  */
 public class QueryParamRule implements Rule<QueryParameter> {
-    private final Logger LOG = LoggerFactory.getLogger(QueryParameter.class);
-    RuleFactory ruleFactory;
-
-    public QueryParamRule(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
-    }
-
     @Override
     public void apply(QueryParameter param, ResourceClassBuilder resourceClassBuilder) {
         resourceClassBuilder.getApiClass().withMethod(
-                new AddQueryParamMethod(param, param.getDisplayName(), ruleFactory.getReq(),
+                new AddQueryParamMethod(param, param.getDisplayName(), resourceClassBuilder.getReq(),
                         resourceClassBuilder.getApiClass()));
 
         resourceClassBuilder.getDefaultsMethod().forParamDefaults(param.getDisplayName(), param);
@@ -68,9 +59,9 @@ public class QueryParamRule implements Rule<QueryParameter> {
                         .addParameter(param.isRepeat() ?
                                 ArrayTypeName.of(ClassName.bestGuess(enumParam.build().name)) :
                                 ClassName.bestGuess(enumParam.build().name), sanitized)
-                        .addStatement("$L.addQueryParam($S, $L.value())", ruleFactory.getReq().name(),
+                        .addStatement("$L.addQueryParam($S, $L.value())", resourceClassBuilder.getReq().name(),
                                 param.getDisplayName(), sanitized)
-                        .addStatement("return this", ruleFactory.getReq().name())
+                        .addStatement("return this", resourceClassBuilder.getReq().name())
                         .build();
             });
         };

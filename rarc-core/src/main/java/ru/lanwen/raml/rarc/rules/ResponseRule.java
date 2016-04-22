@@ -16,12 +16,6 @@ import static ru.lanwen.raml.rarc.rules.BodyRule.MimeTypeEnum.byMimeType;
  * Created by stassiak
  */
 public class ResponseRule implements Rule<MimeType> {
-    RuleFactory ruleFactory;
-
-    public ResponseRule(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
-    }
-
     @Override
     public void apply(MimeType mimeType, ResourceClassBuilder resourceClassBuilder) {
         if (mimeType.getCompiledSchema() == null) {
@@ -29,9 +23,9 @@ public class ResponseRule implements Rule<MimeType> {
         }
 
         ResponseCodegenConfig responseCodegenConfig = ResponseCodegenConfig.config()
-                .withPackageName(ruleFactory.getCodegenConfig().getBasePackage() + "."
+                .withPackageName(resourceClassBuilder.getCodegenConfig().getBasePackage() + "."
                         + packageName(resourceClassBuilder.getResource()) + ".responses")
-                .withOutputPath(ruleFactory.getCodegenConfig().getOutputPath());
+                .withOutputPath(resourceClassBuilder.getCodegenConfig().getOutputPath());
 
         try {
             switch (byMimeType(mimeType)) {
@@ -47,7 +41,7 @@ public class ResponseRule implements Rule<MimeType> {
                     String respClass = new JsonCodegen(
                             responseCodegenConfig
                                     .withSchemaPath(mimeType.getCompiledSchema().toString())
-                                    .withInputPath(ruleFactory.getCodegenConfig().getInputPath().getParent())
+                                    .withInputPath(resourceClassBuilder.getCodegenConfig().getInputPath().getParent())
                     ).generate();
                     if (!resourceClassBuilder.getResponseParser().containsParser(respClass)) {
                         resourceClassBuilder.getResponseParser().addParser(respClass);

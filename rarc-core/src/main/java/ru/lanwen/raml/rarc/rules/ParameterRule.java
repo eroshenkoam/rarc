@@ -13,11 +13,6 @@ import ru.lanwen.raml.rarc.api.ra.DefaultsMethod;
  */
 public class ParameterRule implements Rule<AbstractParam>{
     private final Logger LOG = LoggerFactory.getLogger(ParameterRule.class);
-    RuleFactory ruleFactory;
-
-    public ParameterRule(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
-    }
 
     @Override
     public void apply(AbstractParam param, ResourceClassBuilder resourceClassBuilder) {
@@ -25,13 +20,13 @@ public class ParameterRule implements Rule<AbstractParam>{
                 DefaultsMethod.Param.byClass(param.getClass()), param.getDisplayName()));
         switch (DefaultsMethod.Param.byClass(param.getClass())) {
             case URI_PARAM:
-                ruleFactory.getUriParamRule().apply((UriParameter) param, resourceClassBuilder);
+                new UriParamRule().apply((UriParameter) param, resourceClassBuilder);
                 break;
             case QUERY:
-                ruleFactory.getQueryParamRule().apply((QueryParameter) param, resourceClassBuilder);
+                new QueryParamRule().apply((QueryParameter) param, resourceClassBuilder);
                 break;
             case FORM:
-                ruleFactory.getFormParamRule().apply((FormParameter) param, resourceClassBuilder);
+                new FormParamRule().apply((FormParameter) param, resourceClassBuilder);
 
         }
     }

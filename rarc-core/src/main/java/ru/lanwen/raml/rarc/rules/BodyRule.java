@@ -12,12 +12,6 @@ import static ru.lanwen.raml.rarc.rules.BodyRule.MimeTypeEnum.byMimeType;
  * Created by stassiak
  */
 public class BodyRule implements Rule<MimeType> {
-    RuleFactory ruleFactory;
-
-    public BodyRule(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
-    }
-
     @Override
     public void apply(MimeType body, ResourceClassBuilder resourceClassBuilder) {
         switch (byMimeType(body)) {
@@ -29,10 +23,10 @@ public class BodyRule implements Rule<MimeType> {
                         bodyMethod()
                                 .withShema(body.getCompiledSchema())
                                 .withExample(body.getExample())
-                                .withReqName(ruleFactory.getReq().name())
-                                .withInputPathForJsonGen(ruleFactory.getCodegenConfig().getInputPath().getParent())
-                                .withOutputPathForJsonGen(ruleFactory.getCodegenConfig().getOutputPath())
-                                .withPackageForJsonGen(ruleFactory.getCodegenConfig().getBasePackage() + "."
+                                .withReqName(resourceClassBuilder.getReq().name())
+                                .withInputPathForJsonGen(resourceClassBuilder.getCodegenConfig().getInputPath().getParent())
+                                .withOutputPathForJsonGen(resourceClassBuilder.getCodegenConfig().getOutputPath())
+                                .withPackageForJsonGen(resourceClassBuilder.getCodegenConfig().getBasePackage() + "."
                                         + packageName(resourceClassBuilder.getResource()))
                                 .returns(resourceClassBuilder.getApiClass().name()));
                 break;

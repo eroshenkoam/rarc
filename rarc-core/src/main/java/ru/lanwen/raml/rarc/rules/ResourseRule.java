@@ -18,19 +18,13 @@ import static ru.lanwen.raml.rarc.api.ra.NextResourceMethods.childResource;
  */
 public class ResourseRule implements Rule<Resource>{
     private final Logger LOG = LoggerFactory.getLogger(ResourseRule.class);
-    ReqSpecField req;
-    RespSpecField resp;
-    CodegenConfig config;
-
-    public ResourseRule(RuleFactory ruleFactory) {
-        this.req = ruleFactory.getReq();
-        this.resp = ruleFactory.getResp();
-        this.config = ruleFactory.getCodegenConfig();
-    }
 
     @Override
     public void apply(Resource resource, ResourceClassBuilder resourceClassBuilder) {
         LOG.info("Process resource {}", resource.getUri());
+        ReqSpecField req = resourceClassBuilder.getReq();
+        RespSpecField resp = resourceClassBuilder.getResp();
+        CodegenConfig config = resourceClassBuilder.getCodegenConfig();
 
         resource.getUriParameters().entrySet().stream().forEach(resourceClassBuilder.applyUriParamRule);
 

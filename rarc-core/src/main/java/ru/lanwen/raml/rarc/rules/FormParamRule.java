@@ -19,17 +19,11 @@ import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
  * Created by stassiak
  */
 public class FormParamRule implements Rule<FormParameter>{
-    RuleFactory ruleFactory;
-
-    public FormParamRule(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
-    }
-
     @Override
     public void apply(FormParameter param, ResourceClassBuilder resourceClassBuilder) {
         resourceClassBuilder.getApiClass()
                 .withMethod(new AddFormParamMethod(param, param.getDisplayName(),
-                        ruleFactory.getReq(), resourceClassBuilder.getApiClass()));
+                        resourceClassBuilder.getReq(), resourceClassBuilder.getApiClass()));
 
         resourceClassBuilder.getDefaultsMethod().forParamDefaults(param.getDisplayName(), param);
 
@@ -69,9 +63,9 @@ public class FormParamRule implements Rule<FormParameter>{
                         .addParameter(param.isRepeat() ?
                                 ArrayTypeName.of(ClassName.bestGuess(enumParam.build().name)) :
                                 ClassName.bestGuess(enumParam.build().name), sanitized)
-                        .addStatement("$L.addQueryParam($S, $L.value())", ruleFactory.getReq().name(),
+                        .addStatement("$L.addQueryParam($S, $L.value())", resourceClassBuilder.getReq().name(),
                                 param.getDisplayName(), sanitized)
-                        .addStatement("return this", ruleFactory.getReq().name())
+                        .addStatement("return this", resourceClassBuilder.getReq().name())
                         .build();
             });
         }

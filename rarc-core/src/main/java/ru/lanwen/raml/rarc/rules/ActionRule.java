@@ -11,11 +11,6 @@ import ru.lanwen.raml.rarc.api.ra.ActionMethod;
  */
 public class ActionRule implements Rule<Action>{
     private final Logger LOG = LoggerFactory.getLogger(Action.class);
-    RuleFactory ruleFactory;
-
-    public ActionRule(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
-    }
 
     @Override
     public void apply(Action action, ResourceClassBuilder resourceClassBuilder) {
@@ -24,7 +19,10 @@ public class ActionRule implements Rule<Action>{
         ApiResourceClass apiClass = resourceClassBuilder.getApiClass();
 
         apiClass.withMethod(
-                new ActionMethod(ruleFactory.getReq(), ruleFactory.getResp(), resourceClassBuilder.getUri(), action));
+                new ActionMethod(resourceClassBuilder.getReq(),
+                        resourceClassBuilder.getResp(),
+                        resourceClassBuilder.getUri(),
+                        action));
 
         action.getQueryParameters().entrySet().stream().forEach(resourceClassBuilder.applyQueryParamRule);
         action.getHeaders().entrySet().stream().forEach(resourceClassBuilder.applyHeaderRule);

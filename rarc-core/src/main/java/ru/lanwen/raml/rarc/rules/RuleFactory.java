@@ -25,39 +25,39 @@ public class RuleFactory {
     }
 
     public Rule<Resource> getResourseRule() {
-        return new ResourseRule(this);
+        return new ResourseRule();
     }
 
     public Rule<AbstractParam> getParameterRule() {
-        return new ParameterRule(this);
+        return new ParameterRule();
     }
 
     public Rule<Action> getActionRule() {
-        return new ActionRule(this);
+        return new ActionRule();
     }
 
     public Rule<Header> getHeaderRule() {
-        return new HeaderRule(this);
+        return new HeaderRule();
     }
 
     public Rule<MimeType> getBodyRule() {
-        return new BodyRule(this);
+        return new BodyRule();
     }
 
     public Rule<MimeType> getResponseRule() {
-        return new ResponseRule(this);
+        return new ResponseRule();
     }
 
     public Rule<QueryParameter> getQueryParamRule() {
-        return new QueryParamRule(this);
+        return new QueryParamRule();
     }
 
     public Rule<FormParameter> getFormParamRule() {
-        return new FormParamRule(this);
+        return new FormParamRule();
     }
 
     public Rule<UriParameter> getUriParamRule() {
-        return new UriParamRule(this);
+        return new UriParamRule();
     }
 
     public ReqSpecField getReq() {

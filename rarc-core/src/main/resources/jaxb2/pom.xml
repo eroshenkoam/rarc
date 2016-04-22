@@ -23,6 +23,7 @@
                         </goals>
 
                         <configuration>
+                            <clearOutputDir>false</clearOutputDir>
                             <outputDirectory>${jaxb2.output.dir}</outputDirectory>
                             <packageName>${jaxb2.packagename}</packageName>
                             <sources>

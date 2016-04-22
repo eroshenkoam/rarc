@@ -2,14 +2,14 @@ package ru.lanwen.raml.rarc.rules;
 
 import com.squareup.javapoet.JavaFile;
 import org.raml.model.*;
-import org.raml.model.parameter.FormParameter;
-import org.raml.model.parameter.Header;
-import org.raml.model.parameter.QueryParameter;
-import org.raml.model.parameter.UriParameter;
+import org.raml.model.parameter.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.lanwen.raml.rarc.CodegenConfig;
 import ru.lanwen.raml.rarc.api.ApiResourceClass;
 import ru.lanwen.raml.rarc.api.ra.DefaultsMethod;
+import ru.lanwen.raml.rarc.api.ra.ReqSpecField;
+import ru.lanwen.raml.rarc.api.ra.RespSpecField;
 import ru.lanwen.raml.rarc.api.ra.UriConst;
 import ru.lanwen.raml.rarc.util.ResponseParserClass;
 
@@ -28,21 +28,33 @@ import static ru.lanwen.raml.rarc.util.ResponseParserClass.respParserForResource
  */
 public class ResourceClassBuilder {
     private final Logger LOG = LoggerFactory.getLogger(ResourceClassBuilder.class);
-    private RuleFactory ruleFactory;
+
+    private CodegenConfig codegenConfig;
+
+    private Resource resource;
+    private UriConst uri;
+
     private ApiResourceClass apiClass;
     private DefaultsMethod defaultsMethod;
-    private UriConst uri;
     private ResponseParserClass responseParser;
-    private Resource resource;
+
     private ArrayList<JavaFile> javaFiles = new ArrayList<>();
 
-    public ResourceClassBuilder withRuleFactory(RuleFactory ruleFactory) {
-        this.ruleFactory = ruleFactory;
+    ReqSpecField req;
+    RespSpecField resp = new RespSpecField();;
+
+    public ResourceClassBuilder withCodegenConfig(CodegenConfig codegenConfig) {
+        this.codegenConfig = codegenConfig;
         return this;
     }
 
     public ResourceClassBuilder withResource(Resource resource) {
         this.resource = resource;
+        return this;
+    }
+
+    public ResourceClassBuilder withReq(ReqSpecField req) {
+        this.req = req;
         return this;
     }
 
@@ -59,23 +71,23 @@ public class ResourceClassBuilder {
         uri = new UriConst(resource.getUri());
         apiClass = ApiResourceClass.forResource(resource)
                 .withField(uri)
-                .withField(ruleFactory.getReq())
-                .withField(ruleFactory.getResp());
+                .withField(req)
+                .withField(resp);
         responseParser = respParserForResource(resource);
-        defaultsMethod = new DefaultsMethod(apiClass, ruleFactory.getReq());
+        defaultsMethod = new DefaultsMethod(apiClass, req);
 
-        ruleFactory.getResourseRule().apply(resource, this);
+        new ResourseRule().apply(resource, this);
         javaFiles.stream().forEach(writeTo);
     }
 
     Consumer<Resource> generateResourseClasses = resource -> {
-        new ResourceClassBuilder().withRuleFactory(ruleFactory).withResource(resource).generate();
+        new ResourceClassBuilder().withCodegenConfig(codegenConfig).withResource(resource).withReq(req).generate();
     };
 
     Consumer<JavaFile> writeTo = javaFile -> {
         try {
             LOG.info("Writing " + javaFile.toJavaFileObject().getName());
-            javaFile.writeTo(ruleFactory.getCodegenConfig().getOutputPath());
+            javaFile.writeTo(codegenConfig.getOutputPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,39 +95,39 @@ public class ResourceClassBuilder {
 
     Consumer<Entry<ActionType, Action>> applyActionRule = entry -> {
         entry.getValue().setType(entry.getKey());
-        ruleFactory.getActionRule().apply(entry.getValue(), this);
+        new ActionRule().apply(entry.getValue(), this);
     };
 
     Consumer<Entry<String, QueryParameter>> applyQueryParamRule = entry -> {
         entry.getValue().setDisplayName(entry.getKey());
-        ruleFactory.getParameterRule().apply(entry.getValue(), this);
+        new ParameterRule().apply(entry.getValue(), this);
     };
 
     Consumer<Entry<String, UriParameter>> applyUriParamRule = entry -> {
         entry.getValue().setDisplayName(entry.getKey());
-        ruleFactory.getParameterRule().apply(entry.getValue(), this);
+        new ParameterRule().apply(entry.getValue(), this);
     };
 
     Consumer<Entry<String, Header>> applyHeaderRule = entry -> {
         entry.getValue().setDisplayName(entry.getKey());
-        ruleFactory.getHeaderRule().apply(entry.getValue(), this);
+        new HeaderRule().apply(entry.getValue(), this);
     };
 
     Consumer<Entry<String, List<FormParameter>>> applyFormParamsRule = entry -> {
         entry.getValue().forEach(formParameter -> {
             formParameter.setDisplayName(entry.getKey());
-            ruleFactory.getParameterRule().apply(formParameter, this);
+            new ParameterRule().apply(formParameter, this);
         });
     };
 
     Consumer<MimeType> applyBodyRule = mimeType -> {
-        ruleFactory.getBodyRule().apply(mimeType, this);
+        new BodyRule().apply(mimeType, this);
     };
 
     Consumer<Response> applyResponseRule = response -> {
         if(response.hasBody()){
             response.getBody().values().forEach(mimeType -> {
-                ruleFactory.getResponseRule().apply(mimeType, this);
+                new ResponseRule().apply(mimeType, this);
             });
         }
     };
@@ -144,4 +156,15 @@ public class ResourceClassBuilder {
         return javaFiles;
     }
 
+    public ReqSpecField getReq() {
+        return req;
+    }
+
+    public RespSpecField getResp() {
+        return resp;
+    }
+
+    public CodegenConfig getCodegenConfig() {
+        return codegenConfig;
+    }
 }
