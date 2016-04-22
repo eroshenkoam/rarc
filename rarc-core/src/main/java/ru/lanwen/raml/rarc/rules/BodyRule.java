@@ -43,7 +43,7 @@ public class BodyRule implements Rule<MimeType> {
     enum MimeTypeEnum {
         FORM("application/x-www-form-urlencoded"),
         JSON("application/json"),
-        XML("application/xml");
+        XML("text/xml");
 
         private String mimeType;
 

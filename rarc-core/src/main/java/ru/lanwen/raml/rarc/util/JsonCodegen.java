@@ -18,9 +18,9 @@ import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
  * Created by stassiak
  */
 public class JsonCodegen {
-    private final JsonCodegenConfig config;
+    private final ResponseCodegenConfig config;
 
-    public JsonCodegen(JsonCodegenConfig config) {
+    public JsonCodegen(ResponseCodegenConfig config) {
         this.config = config;
     }
 

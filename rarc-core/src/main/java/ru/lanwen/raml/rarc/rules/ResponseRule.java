@@ -1,18 +1,21 @@
 package ru.lanwen.raml.rarc.rules;
 
+import org.apache.commons.io.FileUtils;
 import org.raml.model.MimeType;
 import ru.lanwen.raml.rarc.util.JsonCodegen;
+import ru.lanwen.raml.rarc.util.ResponseCodegenConfig;
+import ru.lanwen.raml.rarc.util.XmlCodegen;
 
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.Paths;
 
 import static ru.lanwen.raml.rarc.api.ApiResourceClass.packageName;
 import static ru.lanwen.raml.rarc.rules.BodyRule.MimeTypeEnum.byMimeType;
-import static ru.lanwen.raml.rarc.util.JsonCodegenConfig.jsonCodegenConfig;
 
 /**
  * Created by stassiak
  */
-public class ResponseRule implements Rule<MimeType>{
+public class ResponseRule implements Rule<MimeType> {
     RuleFactory ruleFactory;
 
     public ResponseRule(RuleFactory ruleFactory) {
@@ -21,28 +24,39 @@ public class ResponseRule implements Rule<MimeType>{
 
     @Override
     public void apply(MimeType mimeType, ResourceClassBuilder resourceClassBuilder) {
-        switch (byMimeType(mimeType)){
-            case JSON:
-                if (mimeType.getCompiledSchema() != null) {
-                    try {
-                        String respClass = new JsonCodegen(
-                                jsonCodegenConfig()
-                                        .withJsonSchemaPath(mimeType.getCompiledSchema().toString())
-                                        .withPackageName(ruleFactory.getCodegenConfig().getBasePackage() + "."
-                                                + packageName(resourceClassBuilder.getResource()) + ".responses")
-                                        .withInputPath(ruleFactory.getCodegenConfig().getInputPath().getParent())
-                                        .withOutputPath(ruleFactory.getCodegenConfig().getOutputPath())
-                        ).generate();
-                        if(!resourceClassBuilder.getResponseParser().containsParser(respClass)) {
-                            resourceClassBuilder.getResponseParser().addParser(respClass);
-                        }
-
-                    } catch (IOException e) {
-                        throw new RuntimeException("Can't generate code for response: "
-                                + resourceClassBuilder.getResource().getUri(), e);
-                    }
-
-                }
+        if (mimeType.getCompiledSchema() == null) {
+            return;
         }
+
+        ResponseCodegenConfig responseCodegenConfig = ResponseCodegenConfig.config()
+                .withPackageName(ruleFactory.getCodegenConfig().getBasePackage() + "."
+                        + packageName(resourceClassBuilder.getResource()) + ".responses")
+                .withOutputPath(ruleFactory.getCodegenConfig().getOutputPath());
+
+        try {
+            switch (byMimeType(mimeType)) {
+                case XML:
+                    File xsd = File.createTempFile("schema", "xsd");
+                    FileUtils.write(xsd, mimeType.getSchema());
+                    new XmlCodegen(responseCodegenConfig
+                            .withSchemaPath(xsd.getName())
+                            .withInputPath(Paths.get(xsd.getParent()))).generate();
+                    xsd.delete();
+                    break;
+                case JSON:
+                    String respClass = new JsonCodegen(
+                            responseCodegenConfig
+                                    .withSchemaPath(mimeType.getCompiledSchema().toString())
+                                    .withInputPath(ruleFactory.getCodegenConfig().getInputPath().getParent())
+                    ).generate();
+                    if (!resourceClassBuilder.getResponseParser().containsParser(respClass)) {
+                        resourceClassBuilder.getResponseParser().addParser(respClass);
+                    }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Could not generate sources for response: " + e.toString());
+        }
+
+
     }
 }

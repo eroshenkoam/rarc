@@ -6,6 +6,7 @@ import com.squareup.javapoet.MethodSpec;
 import org.apache.commons.io.FileUtils;
 import ru.lanwen.raml.rarc.api.Method;
 import ru.lanwen.raml.rarc.util.JsonCodegen;
+import ru.lanwen.raml.rarc.util.ResponseCodegenConfig;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static ru.lanwen.raml.rarc.util.JsonCodegenConfig.jsonCodegenConfig;
 
 /**
  * Created by stassiak
@@ -71,10 +71,10 @@ public class    AddJsonBodyMethod implements Method {
         String bodyClassName = null;
         try {
             bodyClassName = new JsonCodegen(
-                    jsonCodegenConfig()
+                    ResponseCodegenConfig.config()
                             .withInputPath(inputPathForJsonGen)
                             .withOutputPath(outputPathForJsonGen)
-                            .withJsonSchemaPath(jsonSchemaPath)
+                            .withSchemaPath(jsonSchemaPath)
                             .withPackageName(packageForJsonGen)).generate();
             example = isNotEmpty(example) ?
                     "example: " + example :

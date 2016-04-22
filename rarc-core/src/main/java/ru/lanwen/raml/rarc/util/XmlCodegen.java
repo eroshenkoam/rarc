@@ -1,64 +1,31 @@
 package ru.lanwen.raml.rarc.util;
 
-import org.exolab.castor.builder.SourceGenerator;
-import org.xml.sax.InputSource;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.apache.commons.lang3.StringUtils.capitalize;
-import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
+import java.util.Arrays;
 
 /**
  * Created by stassiak
  */
 public class XmlCodegen {
-    private final JsonCodegenConfig config;
+    private static final String POM_PATH = "jaxb2/pom.xml";
+    private final ResponseCodegenConfig config;
 
-    public XmlCodegen(JsonCodegenConfig config) {
+    public XmlCodegen(ResponseCodegenConfig config) {
         this.config = config;
     }
 
-    public String generate() throws IOException {
-        SourceGenerator generator = new SourceGenerator();
-        String xmlSchema = config.getInputPath();
-        InputSource inputSource = new InputSource(xmlSchema);
-        generator.setDestDir(config.getOutputPath());
-        generator.setGenerateImportedSchemas(true);
-        generator.setClassDescFieldNames(true);
-        generator.setPrimitiveWrapper(true);
-        generator.setUseEnumeratedTypeInterface(true);
-        generator.setSAX1(true);
+    public void generate() throws MavenInvocationException, IOException {
+        InvocationRequest request = new DefaultInvocationRequest();
+        request.setPomFile(new File(this.getClass().getClassLoader().getResource(POM_PATH).getFile()));
+        request.setProperties(config.asJaxb2Properties());
+        request.setGoals(Arrays.asList("clean", "compile"));
 
-        // uncomment to set a resource destination directory
-        // generator.setResourceDestinationDirectory("./target/codegen/src/test/resources");
-
-        generator.setSuppressNonFatalWarnings(true);
-
-        // uncomment to have JDO-specific class descriptors created
-        generator.setJdoDescriptorCreation(true);
-
-        // uncomment to use Velocity for code generation
-        //generator.setJClassPrinterType("velocity");
-
-        // uncomment the next line to set a binding file for source generation
-        // generator.setBinding(new
-        // InputSource(getClass().getResource("binding.xml").toExternalForm()));
-
-        // uncomment the next lines to set custom properties for source generation
-        // Properties properties = new Properties();
-        // properties.load(getClass().getResource("builder.properties").openStream());
-        // generator.setDefaultProperties(properties);
-        generator.setVerbose(true);
-        generator.generateSource(inputSource, config.getPackageName());
-        return getClassName();
-    }
-
-    private String getClassName() {
-        Matcher matcher = Pattern.compile("\\/([\\w]+).xsd").matcher(config.getJsonSchemaPath());
-        matcher.find();
-
-        return capitalize(sanitize(matcher.group(1)));
+        new DefaultInvoker().execute(request);
     }
 }
