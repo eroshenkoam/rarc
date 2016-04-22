@@ -3,7 +3,6 @@ package ru.lanwen.raml.rarc.rules;
 import org.raml.model.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.lanwen.raml.rarc.api.ApiResourceClass;
 import ru.lanwen.raml.rarc.api.ra.ActionMethod;
 
 /**
@@ -16,9 +15,7 @@ public class ActionRule implements Rule<Action>{
     public void apply(Action action, ResourceClassBuilder resourceClassBuilder) {
         LOG.info("Process action " + action.toString());
 
-        ApiResourceClass apiClass = resourceClassBuilder.getApiClass();
-
-        apiClass.withMethod(
+        resourceClassBuilder.getApiClass().withMethod(
                 new ActionMethod(resourceClassBuilder.getReq(),
                         resourceClassBuilder.getResp(),
                         resourceClassBuilder.getUri(),
