@@ -9,7 +9,7 @@ import ru.lanwen.raml.rarc.api.ra.ActionMethod;
  * Created by stassiak
  */
 public class ActionRule implements Rule<Action>{
-    private final Logger LOG = LoggerFactory.getLogger(Action.class);
+    private final Logger LOG = LoggerFactory.getLogger(ActionRule.class);
 
     @Override
     public void apply(Action action, ResourceClassBuilder resourceClassBuilder) {

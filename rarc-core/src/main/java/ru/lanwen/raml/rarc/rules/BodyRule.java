@@ -1,5 +1,7 @@
 package ru.lanwen.raml.rarc.rules;
 
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.path.xml.XmlPath;
 import org.raml.model.MimeType;
 
 import java.util.stream.Stream;
@@ -34,7 +36,7 @@ public class BodyRule implements Rule<MimeType> {
 
     }
 
-    enum MimeTypeEnum {
+    public enum MimeTypeEnum {
         FORM("application/x-www-form-urlencoded"),
         JSON("application/json"),
         XML("text/xml");
@@ -48,6 +50,16 @@ public class BodyRule implements Rule<MimeType> {
         public static MimeTypeEnum byMimeType(MimeType mimeTypeObj) {
             return Stream.of(values()).filter(type -> type.mimeType.equals(mimeTypeObj.getType())).findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No mimetype for " + mimeTypeObj.getType()));
+        }
+
+        public static Class getRaPathClass(MimeTypeEnum type) {
+            switch (type) {
+                case XML:
+                    return XmlPath.class;
+                case JSON:
+                    return JsonPath.class;
+            }
+            return null;
         }
     }
 }
