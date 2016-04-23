@@ -25,12 +25,11 @@ public class XmlCodegen {
 
     public String generate() throws MavenInvocationException, IOException {
         InvocationRequest request = new DefaultInvocationRequest();
+        File pomFile = getPomFile();
 
-        File f = getPomFile();
-        request.setPomFile(f);
-
+        request.setPomFile(pomFile);
         request.setProperties(config.asJaxb2Properties());
-        request.setGoals(Arrays.asList("clean", "compile"));
+        request.setGoals(Arrays.asList("clean", "generate-sources"));
 
         InvocationResult result = new DefaultInvoker().execute(request);
 
@@ -38,7 +37,7 @@ public class XmlCodegen {
             LOG.info("Xmlgen failed: {}", result.getExecutionException());
         }
 
-        f.delete();
+        pomFile.delete();
 
         return capitalize(sanitize(XmlPath.from(new File(config.getInputPath()))
                 .getNode("schema").getNode("element").getAttribute("name"))) + "Type";
