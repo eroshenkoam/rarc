@@ -21,8 +21,8 @@ public class ActionRule implements Rule<Action>{
                         resourceClassBuilder.getUri(),
                         action));
 
-        action.getQueryParameters().entrySet().stream().forEach(resourceClassBuilder.applyQueryParamRule);
-        action.getHeaders().entrySet().stream().forEach(resourceClassBuilder.applyHeaderRule);
+        action.getQueryParameters().forEach(resourceClassBuilder.applyParamRule);
+        action.getHeaders().forEach(resourceClassBuilder.applyParamRule);
         if (action.getBody() != null) {
             action.getBody().values().stream().forEach(resourceClassBuilder.applyBodyRule);
         }

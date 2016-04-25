@@ -1,9 +1,6 @@
 package ru.lanwen.raml.rarc.rules;
 
-import org.raml.model.parameter.AbstractParam;
-import org.raml.model.parameter.FormParameter;
-import org.raml.model.parameter.QueryParameter;
-import org.raml.model.parameter.UriParameter;
+import org.raml.model.parameter.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.lanwen.raml.rarc.api.ra.DefaultsMethod;
@@ -29,6 +26,9 @@ public class ParameterRule implements Rule<AbstractParam>{
             case FORM:
                 new FormParamRule().apply((FormParameter) param, resourceClassBuilder);
                 new EnumRule().apply(param, resourceClassBuilder);
+                break;
+            case HEADER:
+                new HeaderRule().apply((Header) param, resourceClassBuilder);
         }
     }
 }

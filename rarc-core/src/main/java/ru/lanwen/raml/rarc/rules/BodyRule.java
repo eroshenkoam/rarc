@@ -18,7 +18,7 @@ public class BodyRule implements Rule<MimeType> {
     public void apply(MimeType body, ResourceClassBuilder resourceClassBuilder) {
         switch (byMimeType(body)) {
             case FORM:
-                body.getFormParameters().entrySet().stream().forEach(resourceClassBuilder.applyFormParamsRule);
+                body.getFormParameters().forEach(resourceClassBuilder.applyFormParamsRule);
                 break;
             case JSON:
                 resourceClassBuilder.getApiClass().withMethod(

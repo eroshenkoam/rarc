@@ -2,7 +2,9 @@ package ru.lanwen.raml.rarc.rules;
 
 import com.squareup.javapoet.JavaFile;
 import org.raml.model.*;
-import org.raml.model.parameter.*;
+import org.raml.model.parameter.AbstractParam;
+import org.raml.model.parameter.FormParameter;
+import org.raml.model.parameter.UriParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.lanwen.raml.rarc.CodegenConfig;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static ru.lanwen.raml.rarc.util.ResponseParserClass.respParserForResource;
@@ -93,31 +95,18 @@ public class ResourceClassBuilder {
         }
     };
 
-    Consumer<Entry<ActionType, Action>> applyActionRule = entry -> {
-        entry.getValue().setType(entry.getKey());
-        new ActionRule().apply(entry.getValue(), this);
+    BiConsumer<String, AbstractParam> applyParamRule = (name, param) -> {
+        param.setDisplayName(name);
+        new ParameterRule().apply(param, this);
     };
 
-    Consumer<Entry<String, QueryParameter>> applyQueryParamRule = entry -> {
-        entry.getValue().setDisplayName(entry.getKey());
-        new ParameterRule().apply(entry.getValue(), this);
+    BiConsumer<ActionType, Action> applyActionRule = (actionType, action) -> {
+        action.setType(actionType);
+        new ActionRule().apply(action, this);
     };
 
-    Consumer<Entry<String, UriParameter>> applyUriParamRule = entry -> {
-        entry.getValue().setDisplayName(entry.getKey());
-        new ParameterRule().apply(entry.getValue(), this);
-    };
-
-    Consumer<Entry<String, Header>> applyHeaderRule = entry -> {
-        entry.getValue().setDisplayName(entry.getKey());
-        new HeaderRule().apply(entry.getValue(), this);
-    };
-
-    Consumer<Entry<String, List<FormParameter>>> applyFormParamsRule = entry -> {
-        entry.getValue().forEach(formParameter -> {
-            formParameter.setDisplayName(entry.getKey());
-            new ParameterRule().apply(formParameter, this);
-        });
+    BiConsumer<String, List<FormParameter>> applyFormParamsRule = (name, list) -> {
+        list.forEach(param -> applyParamRule.accept(name, param));
     };
 
     Consumer<MimeType> applyBodyRule = mimeType -> {

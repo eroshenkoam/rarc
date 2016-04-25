@@ -26,9 +26,9 @@ public class ResourseRule implements Rule<Resource>{
         RespSpecField resp = resourceClassBuilder.getResp();
         CodegenConfig config = resourceClassBuilder.getCodegenConfig();
 
-        resource.getUriParameters().entrySet().stream().forEach(resourceClassBuilder.applyUriParamRule);
+        resource.getUriParameters().forEach(resourceClassBuilder.applyParamRule);
 
-        resource.getActions().entrySet().stream().forEach(resourceClassBuilder.applyActionRule);
+        resource.getActions().forEach(resourceClassBuilder.applyActionRule);
 
         // TODO: default как название параметра
         resourceClassBuilder.getApiClass().withMethod(defaultConstructor(req, resp))
