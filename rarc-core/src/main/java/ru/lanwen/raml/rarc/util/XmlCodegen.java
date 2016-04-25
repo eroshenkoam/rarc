@@ -5,7 +5,11 @@ import org.apache.maven.shared.invoker.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -25,9 +29,12 @@ public class XmlCodegen {
 
     public String generate() throws MavenInvocationException, IOException {
         InvocationRequest request = new DefaultInvocationRequest();
-        File pomFile = getPomFile();
 
-        request.setPomFile(pomFile);
+        Path pomPath = Files.createTempFile("pom", ".xml");
+        Files.copy(getClass().getClassLoader().getResourceAsStream(POM_PATH),
+                pomPath, StandardCopyOption.REPLACE_EXISTING);
+
+        request.setPomFile(pomPath.toFile());
         request.setProperties(config.asJaxb2Properties());
         request.setGoals(Arrays.asList("clean", "generate-sources"));
 
@@ -37,27 +44,9 @@ public class XmlCodegen {
             LOG.info("Xmlgen failed: {}", result.getExecutionException());
         }
 
-        pomFile.delete();
+        pomPath.toFile().delete();
 
         return capitalize(sanitize(XmlPath.from(new File(config.getInputPath()))
                 .getNode("schema").getNode("element").getAttribute("name"))) + "Type";
-    }
-
-    File getPomFile() throws IOException {
-        File file = File.createTempFile("pom", ".xml");
-        try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream(POM_PATH);
-            OutputStream out = new FileOutputStream(file);
-            int read;
-            byte[] bytes = new byte[1024];
-
-            while ((read = input.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
-            }
-            file.deleteOnExit();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return file;
     }
 }
