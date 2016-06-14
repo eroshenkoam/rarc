@@ -12,6 +12,7 @@ import javax.lang.model.element.Modifier;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.enumParam;
 import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitize;
 
 /**
@@ -36,7 +37,7 @@ public class EnumRule implements Rule<AbstractParam> {
                                     .build());
             param.getEnumeration()
                     .forEach(value -> enumParam.addEnumConstant(
-                            StringUtils.upperCase(sanitize(value)),
+                            StringUtils.upperCase(enumParam(value)),
                             TypeSpec.anonymousClassBuilder("$S", value).build()
                     ));
 
