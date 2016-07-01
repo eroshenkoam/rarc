@@ -26,7 +26,7 @@ public class JsonCodegen {
 
     public String generate() throws IOException {
         JCodeModel codeModel = new JCodeModel();
-        URL source = new URL("file://" + config.getInputPath());
+        URL source = new File(config.getInputPath()).toURI().toURL();
         GenerationConfig generationConfig = new DefaultGenerationConfig() {
             @Override
             public boolean isGenerateBuilders() { // set config option by overriding metho
