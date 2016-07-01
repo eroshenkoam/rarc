@@ -1,5 +1,7 @@
 package ru.lanwen.raml.rarc.util;
 
+import com.jayway.restassured.path.json.config.JsonParserType;
+import com.jayway.restassured.path.json.config.JsonPathConfig;
 import com.jayway.restassured.response.Response;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -38,14 +40,18 @@ public class ResponseParserClass {
     }
 
     public ResponseParserClass addParser(String respClass, BodyRule.MimeTypeEnum mimeType) {
-        MethodSpec parser = MethodSpec.methodBuilder("parse" + respClass)
+        MethodSpec.Builder methodBilder = MethodSpec.methodBuilder("parse" + respClass)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(ClassName.bestGuess(respClass))
-                .addParameter(Response.class, "response")
-                .addStatement("return $T.from(response.asInputStream()).getObject(\".\", $L.class)",
-                        getRaPathClass(mimeType), respClass)
-                .build();
-        parserMethods.put(respClass, parser);
+                .addParameter(Response.class, "response");
+        Class raPathClass = getRaPathClass(mimeType);
+        if( mimeType.equals(BodyRule.MimeTypeEnum.JSON)) {
+            methodBilder.addStatement("$T.config = new $T().defaultParserType($T.GSON)",
+                    raPathClass, JsonPathConfig.class, JsonParserType.class);
+        }
+        methodBilder.addStatement("return $T.from(response.asInputStream()).getObject(\".\", $L.class)",
+                        raPathClass, respClass);
+        parserMethods.put(respClass, methodBilder.build());
         return this;
     }
 
