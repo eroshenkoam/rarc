@@ -13,8 +13,11 @@ public class ParameterRule implements Rule<AbstractParam>{
 
     @Override
     public void apply(AbstractParam param, ResourceClassBuilder resourceClassBuilder) {
-        LOG.info("Process {} param with name \"{}\"",
-                DefaultsMethod.Param.byClass(param.getClass()), param.getDisplayName());
+        LOG.info(
+                "Process {} param with name \"{}\"",
+                DefaultsMethod.Param.byClass(param.getClass()),
+                param.getDisplayName()
+        );
         switch (DefaultsMethod.Param.byClass(param.getClass())) {
             case URI_PARAM:
                 new UriParamRule().apply((UriParameter) param, resourceClassBuilder);

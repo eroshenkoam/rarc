@@ -88,7 +88,7 @@ public class ResourceClassBuilder {
 
     Consumer<JavaFile> writeTo = javaFile -> {
         try {
-            LOG.info("Writing " + javaFile.toJavaFileObject().getName());
+            LOG.info("Writing {}", javaFile.toJavaFileObject().getName());
             javaFile.writeTo(codegenConfig.getOutputPath());
         } catch (IOException e) {
             e.printStackTrace();

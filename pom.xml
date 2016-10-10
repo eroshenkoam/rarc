@@ -1,25 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
 
     <groupId>ru.lanwen.raml</groupId>
     <artifactId>rarc</artifactId>
     <version>1.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>rest-assured-raml-codegen-root</name>
+    <description>Rest-Assured Raml Codegen project</description>
+
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>https://raw.githubusercontent.com/lanwen/rarc/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>lanwen</id>
+            <name>Merkushev Kirill</name>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>lostlittle</id>
+            <name>Nastassia Klishevich</name>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <modules>
         <module>rarc-core</module>
         <module>rarc-maven-plugin</module>
         <module>rarc-example</module>
     </modules>
-    <packaging>pom</packaging>
 
-    <name>rest-assured-raml-codegen-root</name>
-    
+    <scm>
+        <url>git@github.com:lanwen/rarc.git</url>
+        <connection>scm:git:git@github.com:lanwen/rarc.git</connection>
+        <developerConnection>scm:git:git@github.com:lanwen/rarc.git</developerConnection>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
 
@@ -28,7 +66,7 @@
                 <artifactId>rarc-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.raml</groupId>
                 <artifactId>raml-parser</artifactId>
@@ -39,6 +77,12 @@
                         <artifactId>slf4j-log4j12</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jayway.restassured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>2.8.0</version>
             </dependency>
 
             <!--https://github.com/square/javapoet-->
@@ -53,7 +97,7 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>3.4</version>
             </dependency>
-            
+
             <!--MAVEN DEPS-->
 
             <dependency>
@@ -61,7 +105,7 @@
                 <artifactId>maven-plugin-api</artifactId>
                 <version>3.2.5</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-project</artifactId>
@@ -75,7 +119,7 @@
                 <version>3.4</version>
                 <scope>provided</scope>
             </dependency>
-            
+
             <!--TEST DEPS-->
 
             <dependency>
@@ -84,7 +128,7 @@
                 <version>4.12</version>
                 <scope>test</scope>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-all</artifactId>
@@ -139,19 +183,15 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>ru.lanwen.raml</groupId>
+                    <artifactId>rarc-maven-plugin</artifactId>
+                    <version>${project.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>yandex_qa_releases</id>
-            <name>Releases</name>
-            <url>${releases-repo}</url>
-        </repository>
-        <snapshotRepository>
-            <id>yandex_qa_snapshots</id>
-            <name>Snapshots</name>
-            <url>${snapshots-repo}</url>
-        </snapshotRepository>
-    </distributionManagement>
-
 </project>

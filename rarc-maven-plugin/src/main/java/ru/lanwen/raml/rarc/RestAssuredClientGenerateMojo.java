@@ -32,7 +32,6 @@ public class RestAssuredClientGenerateMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-             //TODO no such file check
         try {
             new RestAssuredRamlCodegen(
                     CodegenConfig.codegenConf()
