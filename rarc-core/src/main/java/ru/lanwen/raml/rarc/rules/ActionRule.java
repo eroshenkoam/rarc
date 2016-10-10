@@ -13,7 +13,7 @@ public class ActionRule implements Rule<Action>{
 
     @Override
     public void apply(Action action, ResourceClassBuilder resourceClassBuilder) {
-        LOG.info("Process action " + action.toString());
+        LOG.info("Process action {}", action);
 
         resourceClassBuilder.getApiClass().withMethod(
                 new ActionMethod(resourceClassBuilder.getReq(),
@@ -24,8 +24,8 @@ public class ActionRule implements Rule<Action>{
         action.getQueryParameters().forEach(resourceClassBuilder.applyParamRule);
         action.getHeaders().forEach(resourceClassBuilder.applyParamRule);
         if (action.getBody() != null) {
-            action.getBody().values().stream().forEach(resourceClassBuilder.applyBodyRule);
+            action.getBody().values().forEach(resourceClassBuilder.applyBodyRule);
         }
-        action.getResponses().values().stream().forEach(resourceClassBuilder.applyResponseRule);
+        action.getResponses().values().forEach(resourceClassBuilder.applyResponseRule);
     }
 }
