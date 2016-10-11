@@ -2,7 +2,13 @@ package ru.lanwen.raml.rarc.util;
 
 import com.jayway.restassured.path.json.JsonPath;
 import com.sun.codemodel.JCodeModel;
-import org.jsonschema2pojo.*;
+import org.jsonschema2pojo.DefaultGenerationConfig;
+import org.jsonschema2pojo.GenerationConfig;
+import org.jsonschema2pojo.GsonAnnotator;
+import org.jsonschema2pojo.SchemaGenerator;
+import org.jsonschema2pojo.SchemaMapper;
+import org.jsonschema2pojo.SchemaStore;
+import org.jsonschema2pojo.SourceType;
 import org.jsonschema2pojo.rules.RuleFactory;
 
 import java.io.File;
@@ -35,7 +41,7 @@ public class JsonCodegen {
 
             @Override
             public SourceType getSourceType() {
-                if(JsonPath.from(source).get("$schema") != null) {
+                if (JsonPath.from(source).get("$schema") != null) {
                     return SourceType.JSONSCHEMA;
                 }
                 return SourceType.JSON;
@@ -46,7 +52,10 @@ public class JsonCodegen {
                 return true;
             }
 
-
+            @Override
+            public boolean isUseCommonsLang3() {
+                return true;
+            }
         };
 
         SchemaMapper mapper = new SchemaMapper(
