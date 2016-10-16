@@ -1,7 +1,11 @@
 package ru.lanwen.raml.rarc.rules;
 
 import com.squareup.javapoet.JavaFile;
-import org.raml.model.*;
+import org.raml.model.Action;
+import org.raml.model.ActionType;
+import org.raml.model.MimeType;
+import org.raml.model.Resource;
+import org.raml.model.Response;
 import org.raml.model.parameter.AbstractParam;
 import org.raml.model.parameter.FormParameter;
 import org.raml.model.parameter.UriParameter;
@@ -43,7 +47,7 @@ public class ResourceClassBuilder {
     private ArrayList<JavaFile> javaFiles = new ArrayList<>();
 
     ReqSpecField req;
-    RespSpecField resp = new RespSpecField();;
+    RespSpecField resp = new RespSpecField();
 
     public ResourceClassBuilder withCodegenConfig(CodegenConfig codegenConfig) {
         this.codegenConfig = codegenConfig;
@@ -114,7 +118,7 @@ public class ResourceClassBuilder {
     };
 
     Consumer<Response> applyResponseRule = response -> {
-        if(response.hasBody()){
+        if (response.hasBody()) {
             response.getBody().values().forEach(mimeType -> {
                 new ResponseRule().apply(mimeType, this);
             });

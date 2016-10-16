@@ -1,7 +1,7 @@
 package ru.lanwen.raml.rarc.rules;
 
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.path.xml.XmlPath;
+import io.restassured.path.json.JsonPath;
+import io.restassured.path.xml.XmlPath;
 import org.raml.model.MimeType;
 
 import java.util.stream.Stream;

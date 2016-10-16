@@ -1,12 +1,12 @@
 package ru.lanwen.raml.rarc.api.ra;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.response.Response;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeVariableName;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.raml.model.Action;
 import ru.lanwen.raml.rarc.api.Method;
 
@@ -52,7 +52,7 @@ public class ActionMethod implements Method {
                 .returns(ClassName.bestGuess("T"))
                 .addJavadoc("$L\n", trimToEmpty(action.getDescription()))
                 .addParameter(handler)
-                .addStatement("return $L.apply($T.given().spec($L.build()).expect().spec($L.build()).$L($L))",
+                .addStatement("return $L.apply($T.given().spec($L.build()).expect().spec($L.build()).when().$L($L))",
                         handler.name,
                         RestAssured.class,
                         reqFieldName,
