@@ -1,8 +1,8 @@
 package ru.lanwen.raml.rarc.api.ra;
 
-import com.jayway.restassured.builder.ResponseSpecBuilder;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
+import io.restassured.builder.ResponseSpecBuilder;
 import ru.lanwen.raml.rarc.api.Field;
 
 import javax.lang.model.element.Modifier;

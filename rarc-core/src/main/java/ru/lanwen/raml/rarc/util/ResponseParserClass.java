@@ -1,12 +1,12 @@
 package ru.lanwen.raml.rarc.util;
 
-import com.jayway.restassured.path.json.config.JsonParserType;
-import com.jayway.restassured.path.json.config.JsonPathConfig;
-import com.jayway.restassured.response.Response;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import io.restassured.path.json.config.JsonParserType;
+import io.restassured.path.json.config.JsonPathConfig;
+import io.restassured.response.Response;
 import org.raml.model.Resource;
 import ru.lanwen.raml.rarc.api.ApiResourceClass;
 import ru.lanwen.raml.rarc.rules.BodyRule;

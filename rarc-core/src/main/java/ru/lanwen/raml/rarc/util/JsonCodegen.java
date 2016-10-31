@@ -1,7 +1,7 @@
 package ru.lanwen.raml.rarc.util;
 
-import com.jayway.restassured.path.json.JsonPath;
 import com.sun.codemodel.JCodeModel;
+import io.restassured.path.json.JsonPath;
 import org.jsonschema2pojo.DefaultGenerationConfig;
 import org.jsonschema2pojo.GenerationConfig;
 import org.jsonschema2pojo.GsonAnnotator;

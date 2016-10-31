@@ -27,13 +27,13 @@ will be upgraded to [1.0](http://raml.org/raml-10-spec) soon.
 </plugin>
 ```
 
-- Add dependency to rest-assured (currently tested on `2.8.0`): 
+- Add dependency to rest-assured (currently tested on `3.0.1`): 
 
 ```xml
 <dependency>
-    <groupId>com.jayway.restassured</groupId>
+    <groupId>io.rest-assured</groupId>
     <artifactId>rest-assured</artifactId>
-    <version>2.8.0</version>
+    <version>3.0.1</version>
 </dependency>
 ```
 
@@ -42,15 +42,15 @@ will be upgraded to [1.0](http://raml.org/raml-10-spec) soon.
 
 ```java
 ApiExample.example(
-                ApiExample.Config.exampleConfig()
-                        .withReqSpecSupplier(
-                                () -> new RequestSpecBuilder().setBaseUri("http://your_host/")
-                        )
-        )
-                .rpcApi()
-                .uid().withUid("1")
-                .info()
-                .get(identity()).prettyPeek();
+        ApiExample.Config.exampleConfig()
+                .withReqSpecSupplier(
+                        () -> new RequestSpecBuilder().setBaseUri("http://your_host/")
+                )
+            )
+            .rpcApi()
+            .uid().withUid("1")
+            .info()
+            .get(identity()).prettyPeek();
 ```
 
 See working example in `rarc-example` module.

@@ -1,7 +1,11 @@
 package ru.lanwen.raml.rarc.util;
 
-import com.jayway.restassured.path.xml.XmlPath;
-import org.apache.maven.shared.invoker.*;
+import io.restassured.path.xml.XmlPath;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

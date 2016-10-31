@@ -1,6 +1,6 @@
 package ru.lanwen.raml.test;
 
-import com.jayway.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.RequestSpecBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
 
