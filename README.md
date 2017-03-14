@@ -27,13 +27,13 @@ will be upgraded to [1.0](http://raml.org/raml-10-spec) soon.
 </plugin>
 ```
 
-- Add dependency to rest-assured (currently tested on `3.0.1`): 
+- Add dependency to rest-assured (currently tested on `3.0.2`): 
 
 ```xml
 <dependency>
     <groupId>io.rest-assured</groupId>
     <artifactId>rest-assured</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2</version>
 </dependency>
 ```
 
