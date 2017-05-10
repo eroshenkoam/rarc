@@ -107,3 +107,64 @@ traits: !include /traits.yaml
               enumparam_in_form:
                 description: enum parameter in form parameters should not became query parameter and contain underlines
                 enum: [one, 2, underscored_param, for]
+
+/hard_duplicate:
+  description: duplicate query and form params
+  put:
+    queryParameters:
+      duplicated_param:
+        description: this param duplicated in post, delete and get
+        required: true
+      duplicated_param:
+        description: ooops another duplicate param
+        required: true
+      query_param_1:
+        description: clean query param
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          duplicated_param:
+            description: this param duplicated in put, post and delete
+          duplicated_param:
+            description: ooops another duplicate param
+          form_param_1:
+            description: another clean form param
+  get:
+    queryParameters:
+      duplicated_param:
+        description: this param duplicated in post, delete and get
+        required: true
+      duplicated_param:
+        description: ooops another duplicate param
+        required: true
+      query_param_2:
+        description: clean query param
+  post:
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          duplicated_param:
+            description: this param duplicated in post, delete and get
+          duplicated_param:
+            description: ooops another duplicate param
+          form_param_1:
+            description: another clean form param
+  delete:
+    queryParameters:
+      duplicated_param:
+        description: this param duplicated in post, delete and get
+        required: true
+      duplicated_param:
+        description: ooops another duplicate param
+        required: true
+      query_param_2:
+        description: clean query param
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          duplicated_param:
+            description: this param duplicated in post, delete and get
+          duplicated_param:
+            description: ooops another duplicate param
+          form_param_2:
+            description: clean form param

@@ -1,9 +1,7 @@
 package ru.lanwen.raml.rarc.api;
 
 import com.google.common.collect.Sets;
-import ru.lanwen.raml.rarc.api.ra.AddAnyParamMethod;
 import ru.lanwen.raml.rarc.api.ra.AddFormParamMethod;
-import ru.lanwen.raml.rarc.api.ra.AddHeaderMethod;
 import ru.lanwen.raml.rarc.api.ra.AddQueryParamMethod;
 
 import java.util.ArrayList;
@@ -48,17 +46,20 @@ class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMet
                 Optional<AddParamMethod> form = list.stream().filter(item -> item instanceof AddFormParamMethod).findFirst();
                 if (form.isPresent()) {
                     list.remove(form.get());
-                    list.add(new AddAnyParamMethod(((AddQueryParamMethod) elem).getParam(), elem.name(), ((AddQueryParamMethod) elem).getReq(), apiResourceClass));
+                    list.add(new AddFormParamMethod(((AddFormParamMethod) form.get()).getParam(), form.get().name(), ((AddFormParamMethod) form.get()).getReq(), apiResourceClass, "AsFormParam"));
+                    list.add(new AddQueryParamMethod(((AddQueryParamMethod) elem).getParam(), elem.name(), ((AddQueryParamMethod) elem).getReq(), apiResourceClass, "AsQueryParam"));
                 } else {
                     list.add(elem);
                 }
                 return;
             }
+
             if (elem instanceof AddFormParamMethod) {
                 Optional<AddParamMethod> query = list.stream().filter(item -> item instanceof AddQueryParamMethod).findFirst();
                 if (query.isPresent()) {
                     list.remove(query.get());
-                    list.add(new AddAnyParamMethod(((AddFormParamMethod) elem).getParam(), elem.name(), ((AddFormParamMethod) elem).getReq(), apiResourceClass));
+                    list.add(new AddQueryParamMethod(((AddQueryParamMethod) query.get()).getParam(), query.get().name(), ((AddQueryParamMethod) query.get()).getReq(), apiResourceClass, "AsQueryParam"));
+                    list.add(new AddFormParamMethod(((AddFormParamMethod) elem).getParam(), elem.name(), ((AddFormParamMethod) elem).getReq(), apiResourceClass, "AsFormParam"));
                 } else {
                     list.add(elem);
                 }
