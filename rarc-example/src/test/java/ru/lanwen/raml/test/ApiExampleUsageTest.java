@@ -26,4 +26,15 @@ public class ApiExampleUsageTest {
                 .get(identity()).prettyPeek();
 
     }
+
+    @Test
+    public void shouldUseDuplicateParams() {
+        ApiExample.example(
+                ApiExample.Config.exampleConfig()
+                        .withReqSpecSupplier(
+                                () -> new RequestSpecBuilder().setBaseUri("http://your_host/")
+                        )
+        ).hardDuplicate().withDuplicatedParam("blah").post(identity()).prettyPeek();
+    }
+
 }
