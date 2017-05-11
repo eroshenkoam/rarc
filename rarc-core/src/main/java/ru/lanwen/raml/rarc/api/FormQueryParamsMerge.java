@@ -62,8 +62,8 @@ class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMet
             }
 
             // Check duplicates
-            Optional<AddParamMethod> alreadyIn = list.stream().filter(item -> item instanceof AddAnyParamMethod).findFirst();
-            if (!alreadyIn.isPresent()) {
+            boolean alreadyIn = list.stream().anyMatch(AddAnyParamMethod.class::isInstance);
+            if (!alreadyIn) {
                 list.add(elem);
             }
         };
