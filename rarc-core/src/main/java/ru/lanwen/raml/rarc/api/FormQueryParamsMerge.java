@@ -20,8 +20,8 @@ import static java.util.stream.Collectors.toList;
  * @author lanwen (Merkushev Kirill)
  */
 class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMethod>, List<AddParamMethod>> {
-    private static final String FORM_PARAM_SUFFIX = "AsFormParam";
-    private static final String QUERY_PARAM_SUFFIX = "AsQueryParam";
+    private static final String FORM_PARAM_SUFFIX = "AsForm";
+    private static final String QUERY_PARAM_SUFFIX = "AsQuery";
     private ApiResourceClass apiResourceClass;
 
     public FormQueryParamsMerge(ApiResourceClass apiResourceClass) {

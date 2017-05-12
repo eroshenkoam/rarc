@@ -9,9 +9,7 @@ import ru.lanwen.raml.rarc.api.ApiResourceClass;
 
 import javax.lang.model.element.Modifier;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static org.apache.commons.lang3.StringUtils.*;
 import static ru.lanwen.raml.rarc.api.ApiResourceClass.sanitizeParamName;
 
 /**
@@ -24,20 +22,16 @@ public class AddFormParamMethod implements AddParamMethod {
     private ApiResourceClass apiClass;
     private String suffix;
 
-    public AddFormParamMethod(FormParameter param, String name, ReqSpecField req, ApiResourceClass apiClass) {
-        this.param = param;
-        this.name = name;
-        this.req = req;
-        this.apiClass = apiClass;
-        this.suffix = "";
-    }
-
     public AddFormParamMethod(FormParameter param, String name, ReqSpecField req, ApiResourceClass apiClass, String suffix) {
         this.param = param;
         this.name = name;
         this.req = req;
         this.apiClass = apiClass;
         this.suffix = suffix;
+    }
+
+    public AddFormParamMethod(FormParameter param, String name, ReqSpecField req, ApiResourceClass apiClass) {
+        this(param, name, req, apiClass, EMPTY);
     }
 
     @Override
