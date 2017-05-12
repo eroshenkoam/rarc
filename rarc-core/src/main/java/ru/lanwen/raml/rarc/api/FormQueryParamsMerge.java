@@ -20,6 +20,8 @@ import static java.util.stream.Collectors.toList;
  * @author lanwen (Merkushev Kirill)
  */
 class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMethod>, List<AddParamMethod>> {
+    private static final String FORM_PARAM_SUFFIX = "AsFormParam";
+    private static final String QUERY_PARAM_SUFFIX = "AsQueryParam";
     private ApiResourceClass apiResourceClass;
 
     public FormQueryParamsMerge(ApiResourceClass apiResourceClass) {
@@ -46,8 +48,8 @@ class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMet
                 Optional<AddParamMethod> form = list.stream().filter(item -> item instanceof AddFormParamMethod).findFirst();
                 if (form.isPresent()) {
                     list.remove(form.get());
-                    list.add(new AddFormParamMethod(((AddFormParamMethod) form.get()).getParam(), form.get().name(), ((AddFormParamMethod) form.get()).getReq(), apiResourceClass, "AsFormParam"));
-                    list.add(new AddQueryParamMethod(((AddQueryParamMethod) elem).getParam(), elem.name(), ((AddQueryParamMethod) elem).getReq(), apiResourceClass, "AsQueryParam"));
+                    list.add(new AddFormParamMethod(((AddFormParamMethod) form.get()).getParam(), form.get().name(), ((AddFormParamMethod) form.get()).getReq(), apiResourceClass, FORM_PARAM_SUFFIX));
+                    list.add(new AddQueryParamMethod(((AddQueryParamMethod) elem).getParam(), elem.name(), ((AddQueryParamMethod) elem).getReq(), apiResourceClass, QUERY_PARAM_SUFFIX));
                 } else {
                     list.add(elem);
                 }
@@ -58,8 +60,8 @@ class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMet
                 Optional<AddParamMethod> query = list.stream().filter(item -> item instanceof AddQueryParamMethod).findFirst();
                 if (query.isPresent()) {
                     list.remove(query.get());
-                    list.add(new AddQueryParamMethod(((AddQueryParamMethod) query.get()).getParam(), query.get().name(), ((AddQueryParamMethod) query.get()).getReq(), apiResourceClass, "AsQueryParam"));
-                    list.add(new AddFormParamMethod(((AddFormParamMethod) elem).getParam(), elem.name(), ((AddFormParamMethod) elem).getReq(), apiResourceClass, "AsFormParam"));
+                    list.add(new AddQueryParamMethod(((AddQueryParamMethod) query.get()).getParam(), query.get().name(), ((AddQueryParamMethod) query.get()).getReq(), apiResourceClass, QUERY_PARAM_SUFFIX));
+                    list.add(new AddFormParamMethod(((AddFormParamMethod) elem).getParam(), elem.name(), ((AddFormParamMethod) elem).getReq(), apiResourceClass, FORM_PARAM_SUFFIX));
                 } else {
                     list.add(elem);
                 }
