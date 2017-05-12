@@ -46,8 +46,8 @@ public class ResourceClassBuilder {
 
     private ArrayList<JavaFile> javaFiles = new ArrayList<>();
 
-    ReqSpecField req;
-    RespSpecField resp = new RespSpecField();
+    private ReqSpecField req;
+    private RespSpecField resp = new RespSpecField();
 
     public ResourceClassBuilder withCodegenConfig(CodegenConfig codegenConfig) {
         this.codegenConfig = codegenConfig;
@@ -72,7 +72,7 @@ public class ResourceClassBuilder {
             resource.setUriParameters(combined);
         }
 
-        resource.getResources().values().stream().forEach(generateResourseClasses);
+        resource.getResources().values().stream().forEach(generateResourceClasses);
 
         uri = new UriConst(resource.getUri());
         apiClass = ApiResourceClass.forResource(resource)
@@ -82,11 +82,11 @@ public class ResourceClassBuilder {
         responseParser = respParserForResource(resource);
         defaultsMethod = new DefaultsMethod(apiClass, req);
 
-        new ResourseRule().apply(resource, this);
+        new ResourceRule().apply(resource, this);
         javaFiles.stream().forEach(writeTo);
     }
 
-    Consumer<Resource> generateResourseClasses = resource -> {
+    Consumer<Resource> generateResourceClasses = resource -> {
         new ResourceClassBuilder().withCodegenConfig(codegenConfig).withResource(resource).withReq(req).generate();
     };
 

@@ -1,7 +1,10 @@
 package ru.lanwen.raml.rarc;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.nio.file.Path;
-import java.util.List;
+
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.packageName;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -34,8 +37,24 @@ public class CodegenConfig {
         return this;
     }
 
+    public static String getObjectPackage(String uri) {
+        return packageName(FilenameUtils.getFullPathNoEndSeparator(uri));
+    }
+
     public String getBasePackage() {
         return basePackage;
+    }
+
+    public String getBaseJsonObjectsPackage() {
+        return getBaseObjectsPackage("jsonObjects");
+    }
+
+    public String getBaseXmlObjectsPackage() {
+        return getBaseObjectsPackage("xmlObjects");
+    }
+
+    private String getBaseObjectsPackage(String type) {
+        return String.format("%s.%s", basePackage, type);
     }
 
     public Path getInputPath() {

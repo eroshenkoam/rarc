@@ -16,8 +16,8 @@ import static ru.lanwen.raml.rarc.api.ra.NextResourceMethods.childResource;
 /**
  * Created by stassiak
  */
-public class ResourseRule implements Rule<Resource> {
-    private final Logger LOG = LoggerFactory.getLogger(ResourseRule.class);
+public class ResourceRule implements Rule<Resource> {
+    private final Logger LOG = LoggerFactory.getLogger(ResourceRule.class);
 
     @Override
     public void apply(Resource resource, ResourceClassBuilder resourceClassBuilder) {

@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
  * @author lanwen (Merkushev Kirill)
  */
 @RunWith(DataProviderRunner.class)
-public class ApiResourseClassTest {
+public class ApiResourceClassTest {
 
     @Test
     @DataProvider({

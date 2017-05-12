@@ -39,19 +39,21 @@ public class ResponseParserClass {
         return JavaFile.builder(basePackage + "." + packageName, apiClass.build()).build();
     }
 
-    public ResponseParserClass addParser(String respClass, BodyRule.MimeTypeEnum mimeType) {
-        MethodSpec.Builder methodBilder = MethodSpec.methodBuilder("parse" + respClass)
+    public ResponseParserClass addParser(String respClass, BodyRule.MimeTypeEnum mimeType, String packageForJsonGen) {
+        ClassName className = ClassName.get(packageForJsonGen, respClass);
+
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("parse" + respClass)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .returns(ClassName.bestGuess(respClass))
+                .returns(className)
                 .addParameter(Response.class, "response");
         Class raPathClass = getRaPathClass(mimeType);
-        if( mimeType.equals(BodyRule.MimeTypeEnum.JSON)) {
-            methodBilder.addStatement("$T.config = new $T().defaultParserType($T.GSON)",
+        if (mimeType.equals(BodyRule.MimeTypeEnum.JSON)) {
+            methodBuilder.addStatement("$T.config = new $T().defaultParserType($T.GSON)",
                     raPathClass, JsonPathConfig.class, JsonParserType.class);
         }
-        methodBilder.addStatement("return $T.from(response.asInputStream()).getObject(\".\", $L.class)",
-                        raPathClass, respClass);
-        parserMethods.put(respClass, methodBilder.build());
+        methodBuilder.addStatement("return $T.from(response.asInputStream()).getObject(\".\", $L.class)",
+                raPathClass, respClass);
+        parserMethods.put(respClass, methodBuilder.build());
         return this;
     }
 

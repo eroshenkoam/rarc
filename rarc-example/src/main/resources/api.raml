@@ -107,6 +107,7 @@ traits: !include /traits.yaml
               enumparam_in_form:
                 description: enum parameter in form parameters should not became query parameter and contain underlines
                 enum: [one, 2, underscored_param, for]
+
 /hard_duplicate:
   description: duplicate query and form params
   get:
@@ -139,3 +140,87 @@ traits: !include /traits.yaml
             description: ooops another duplicate param in delete
           form_param_2:
             description: clean form param
+
+/objects_duplicate:
+  description: duplicate response objects
+  get:
+    description: get with duplicate response in post
+    responses:
+      200:
+        description: it's duplicate
+        body:
+          application/json:
+            schema: !include schemas/messageResp.json
+  post:
+    description: post with duplicate body and response
+    body:
+      application/json:
+        schema: !include schemas/messageResp.json
+    responses:
+      200:
+        description: it's duplicate
+        body:
+          application/json:
+            schema: !include schemas/messageResp.json
+
+/subfolder_schema_json:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            schema: !include schemas/responses/schema.json
+  post:
+    body:
+      application/json:
+        schema: !include schemas/responses/schema2.json
+    responses:
+      200:
+        body:
+          application/json:
+            schema: !include schemas/responses/schema2.json
+
+
+/ref_schema_json:
+  description: generate with $ref
+  get:
+    description: schema with $ref
+    responses:
+      200:
+        description: $ref
+        body:
+          application/json:
+            schema: !include schemas/schema.json
+  post:
+    description: othershema.json
+    body:
+      application/json:
+        schema: !include schemas/schema.json
+    responses:
+      200:
+        description: it's duplicate
+        body:
+          application/json:
+            schema: !include schemas/otherschema.json
+
+  /child_ref_shchema_json:
+    description: generate with $ref
+    get:
+      description: schema with $ref
+      responses:
+        200:
+          description: $ref
+          body:
+            application/json:
+              schema: !include schemas/schema2.json
+    post:
+      description: othershema.json
+      body:
+        application/json:
+          schema: !include schemas/schema.json
+      responses:
+        200:
+          description: it's duplicate
+          body:
+            application/json:
+              schema: !include schemas/otherschema.json

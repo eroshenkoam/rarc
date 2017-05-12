@@ -15,15 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.capitalize;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
-import static org.apache.commons.lang3.StringUtils.uncapitalize;
-import static org.apache.commons.lang3.StringUtils.upperCase;
+import static java.util.stream.Collectors.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -91,7 +84,11 @@ public class ApiResourceClass {
     }
 
     public static String packageName(Resource resource) {
-        String packageName = sanitize(resource.getUri())
+        return packageName(resource.getUri());
+    }
+
+    public static String packageName(String uri) {
+        String packageName = sanitize(uri)
                 .toLowerCase()
                 .replace("//", "/")
                 .replace("/", ".");
