@@ -34,7 +34,8 @@ public class ApiExampleUsageTest {
                         .withReqSpecSupplier(
                                 () -> new RequestSpecBuilder().setBaseUri("http://your_host/")
                         )
-        ).hardDuplicate().withDuplicatedParam("blah").post(identity()).prettyPeek();
+        ).hardDuplicate().withDuplicatedParamAsQueryParam("blah")
+                .withDuplicatedParamAsFormParam("sad").post(identity()).prettyPeek();
     }
 
 }

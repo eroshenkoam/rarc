@@ -1,7 +1,6 @@
 package ru.lanwen.raml.rarc.api;
 
 import com.google.common.collect.Sets;
-import ru.lanwen.raml.rarc.api.ra.AddAnyParamMethod;
 import ru.lanwen.raml.rarc.api.ra.AddFormParamMethod;
 import ru.lanwen.raml.rarc.api.ra.AddQueryParamMethod;
 
@@ -21,6 +20,8 @@ import static java.util.stream.Collectors.toList;
  * @author lanwen (Merkushev Kirill)
  */
 class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMethod>, List<AddParamMethod>> {
+    private static final String FORM_PARAM_SUFFIX = "AsForm";
+    private static final String QUERY_PARAM_SUFFIX = "AsQuery";
     private ApiResourceClass apiResourceClass;
 
     public FormQueryParamsMerge(ApiResourceClass apiResourceClass) {
@@ -47,23 +48,24 @@ class FormQueryParamsMerge implements Collector<AddParamMethod, List<AddParamMet
                 Optional<AddParamMethod> form = list.stream().filter(item -> item instanceof AddFormParamMethod).findFirst();
                 if (form.isPresent()) {
                     list.remove(form.get());
-                    list.add(new AddAnyParamMethod(((AddQueryParamMethod) elem).getParam(), elem.name(), ((AddQueryParamMethod) elem).getReq(), apiResourceClass));
-                    return;
+                    list.add(new AddFormParamMethod(((AddFormParamMethod) form.get()).getParam(), form.get().name(), ((AddFormParamMethod) form.get()).getReq(), apiResourceClass, FORM_PARAM_SUFFIX));
+                    list.add(new AddQueryParamMethod(((AddQueryParamMethod) elem).getParam(), elem.name(), ((AddQueryParamMethod) elem).getReq(), apiResourceClass, QUERY_PARAM_SUFFIX));
+                } else {
+                    list.add(elem);
                 }
+                return;
             }
 
             if (elem instanceof AddFormParamMethod) {
                 Optional<AddParamMethod> query = list.stream().filter(item -> item instanceof AddQueryParamMethod).findFirst();
                 if (query.isPresent()) {
                     list.remove(query.get());
-                    list.add(new AddAnyParamMethod(((AddFormParamMethod) elem).getParam(), elem.name(), ((AddFormParamMethod) elem).getReq(), apiResourceClass));
-                    return;
+                    list.add(new AddQueryParamMethod(((AddQueryParamMethod) query.get()).getParam(), query.get().name(), ((AddQueryParamMethod) query.get()).getReq(), apiResourceClass, QUERY_PARAM_SUFFIX));
+                    list.add(new AddFormParamMethod(((AddFormParamMethod) elem).getParam(), elem.name(), ((AddFormParamMethod) elem).getReq(), apiResourceClass, FORM_PARAM_SUFFIX));
+                } else {
+                    list.add(elem);
                 }
-            }
-
-            // Check duplicates
-            boolean alreadyIn = list.stream().anyMatch(AddAnyParamMethod.class::isInstance);
-            if (!alreadyIn) {
+            } else {
                 list.add(elem);
             }
         };

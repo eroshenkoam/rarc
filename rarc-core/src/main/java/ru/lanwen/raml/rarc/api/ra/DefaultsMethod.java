@@ -47,7 +47,7 @@ public class DefaultsMethod implements Method {
                 builder.addStatement("$N.addQueryParam($S, $S)", req.name(), name, param.getDefaultValue());
                 break;
             case FORM:
-                builder.addStatement("$N.addParam($S, $S)", req.name(), name, param.getDefaultValue());
+                builder.addStatement("$N.addFormParam($S, $S)", req.name(), name, param.getDefaultValue());
                 break;
             case HEADER:
                 builder.addStatement("$N.addHeader($S, $S)", req.name(), name, param.getDefaultValue());
