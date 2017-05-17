@@ -108,6 +108,17 @@ traits: !include /traits.yaml
                 description: enum parameter in form parameters should not became query parameter and contain underlines
                 enum: [one, 2, underscored_param, for]
 
+/xsd:
+  post:
+    body:
+      text/xml:
+#        schema: !include xsd/status.xsd
+    responses:
+      200:
+        body:
+          text/xml:
+#            schema: !include xsd/status.xsd
+
 /hard_duplicate:
   description: duplicate query and form params
   get:

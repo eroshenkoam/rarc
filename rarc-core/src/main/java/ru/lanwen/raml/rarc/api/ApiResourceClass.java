@@ -5,6 +5,7 @@ import com.google.common.base.Splitter;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.NameAllocator;
 import com.squareup.javapoet.TypeSpec;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.raml.model.Resource;
 
@@ -81,6 +82,14 @@ public class ApiResourceClass {
         enums.forEach(apiClass::addType);
 
         return JavaFile.builder(basePackage + "." + packageName, apiClass.build()).build();
+    }
+
+    public static String addedObjectPackage(String uri) {
+        String path = FilenameUtils.getFullPathNoEndSeparator(uri);
+        if (path.isEmpty()) {
+            return EMPTY;
+        }
+        return "." + packageName(path);
     }
 
     public static String packageName(Resource resource) {

@@ -6,7 +6,7 @@ import org.raml.model.MimeType;
 
 import java.util.stream.Stream;
 
-import static ru.lanwen.raml.rarc.CodegenConfig.getObjectPackage;
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.addedObjectPackage;
 import static ru.lanwen.raml.rarc.api.ra.AddJsonBodyMethod.bodyMethod;
 import static ru.lanwen.raml.rarc.rules.BodyRule.MimeTypeEnum.byMimeType;
 
@@ -28,7 +28,8 @@ public class BodyRule implements Rule<MimeType> {
                                 .withReqName(resourceClassBuilder.getReq().name())
                                 .withInputPathForJsonGen(resourceClassBuilder.getCodegenConfig().getInputPath().getParent())
                                 .withOutputPathForJsonGen(resourceClassBuilder.getCodegenConfig().getOutputPath())
-                                .withPackageForJsonGen(resourceClassBuilder.getCodegenConfig().getBaseJsonObjectsPackage() + "." + getObjectPackage(body.getCompiledSchema().toString()))
+                                .withPackageForJsonGen(resourceClassBuilder.getCodegenConfig().getBaseObjectsPackage()
+                                        + addedObjectPackage(body.getCompiledSchema().toString()))
                                 .returns(resourceClassBuilder.getApiClass().name()));
                 break;
         }
