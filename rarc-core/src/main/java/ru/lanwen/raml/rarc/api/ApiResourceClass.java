@@ -5,6 +5,7 @@ import com.google.common.base.Splitter;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.NameAllocator;
 import com.squareup.javapoet.TypeSpec;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.raml.model.Resource;
 
@@ -24,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static org.apache.commons.lang3.StringUtils.upperCase;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -90,8 +92,20 @@ public class ApiResourceClass {
         return JavaFile.builder(basePackage + "." + packageName, apiClass.build()).build();
     }
 
+    public static String addedObjectPackage(String uri) {
+        String path = FilenameUtils.getFullPathNoEndSeparator(uri);
+        if (path.isEmpty()) {
+            return EMPTY;
+        }
+        return "." + packageName(path);
+    }
+
     public static String packageName(Resource resource) {
-        String packageName = sanitize(resource.getUri())
+        return packageName(resource.getUri());
+    }
+
+    public static String packageName(String uri) {
+        String packageName = sanitize(uri)
                 .toLowerCase()
                 .replace("//", "/")
                 .replace("/", ".");

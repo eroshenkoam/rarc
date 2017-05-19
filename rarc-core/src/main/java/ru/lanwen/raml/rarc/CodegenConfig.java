@@ -1,7 +1,6 @@
 package ru.lanwen.raml.rarc;
 
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * @author lanwen (Merkushev Kirill)
@@ -36,6 +35,10 @@ public class CodegenConfig {
 
     public String getBasePackage() {
         return basePackage;
+    }
+
+    public String getBaseObjectsPackage() {
+        return String.format("%s.%s", basePackage, "objects");
     }
 
     public Path getInputPath() {

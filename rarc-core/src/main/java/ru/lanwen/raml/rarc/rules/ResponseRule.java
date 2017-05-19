@@ -11,7 +11,7 @@ import ru.lanwen.raml.rarc.util.XmlCodegen;
 import java.io.File;
 import java.nio.file.Paths;
 
-import static ru.lanwen.raml.rarc.api.ApiResourceClass.packageName;
+import static ru.lanwen.raml.rarc.api.ApiResourceClass.addedObjectPackage;
 import static ru.lanwen.raml.rarc.rules.BodyRule.MimeTypeEnum.byMimeType;
 
 /**
@@ -27,8 +27,6 @@ public class ResponseRule implements Rule<MimeType> {
         }
         LOG.info("Process {}", mimeType.toString());
         ResponseCodegenConfig responseCodegenConfig = ResponseCodegenConfig.config()
-                .withPackageName(resourceClassBuilder.getCodegenConfig().getBasePackage() + "."
-                        + packageName(resourceClassBuilder.getResource()) + ".responses")
                 .withOutputPath(resourceClassBuilder.getCodegenConfig().getOutputPath());
 
         String respClass = null;
@@ -38,6 +36,8 @@ public class ResponseRule implements Rule<MimeType> {
                     File xsd = File.createTempFile("schema", "xsd");
                     FileUtils.write(xsd, mimeType.getSchema());
                     respClass = new XmlCodegen(responseCodegenConfig
+                            .withPackageName(resourceClassBuilder.getCodegenConfig().getBaseObjectsPackage()
+                                    + addedObjectPackage(xsd.getName()))
                             .withSchemaPath(xsd.getName())
                             .withInputPath(Paths.get(xsd.getParent()))).generate();
                     xsd.delete();
@@ -45,6 +45,8 @@ public class ResponseRule implements Rule<MimeType> {
                 case JSON:
                     respClass = new JsonCodegen(
                             responseCodegenConfig
+                                    .withPackageName(resourceClassBuilder.getCodegenConfig().getBaseObjectsPackage()
+                                            + addedObjectPackage(mimeType.getCompiledSchema().toString()))
                                     .withSchemaPath(mimeType.getCompiledSchema().toString())
                                     .withInputPath(resourceClassBuilder.getCodegenConfig().getInputPath().getParent())
                     ).generate();
@@ -54,8 +56,10 @@ public class ResponseRule implements Rule<MimeType> {
         }
 
         if (respClass != null && !resourceClassBuilder.getResponseParser().containsParser(respClass)) {
-            resourceClassBuilder.getResponseParser().addParser(respClass, byMimeType(mimeType));
+            resourceClassBuilder.getResponseParser().addParser(respClass, byMimeType(mimeType),
+                    resourceClassBuilder.getCodegenConfig().getBaseObjectsPackage()
+                            + addedObjectPackage(mimeType.getCompiledSchema().toString())
+            );
         }
-
     }
 }

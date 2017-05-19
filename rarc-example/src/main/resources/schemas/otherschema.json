@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://example.com/example.json",
+  "properties": {
+    "statusId": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "blah": {
+          "type": "string"
+        },
+        "blahblah": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "type": "object"
+}

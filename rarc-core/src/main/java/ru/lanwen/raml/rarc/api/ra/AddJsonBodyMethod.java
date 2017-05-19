@@ -18,7 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 /**
  * Created by stassiak
  */
-public class    AddJsonBodyMethod implements Method {
+public class AddJsonBodyMethod implements Method {
     private String reqName;
     private String returnClassName;
     private Path inputPathForJsonGen;
@@ -56,7 +56,7 @@ public class    AddJsonBodyMethod implements Method {
         return this;
     }
 
-    public AddJsonBodyMethod withShema(Object jsonSchema) {
+    public AddJsonBodyMethod withSchema(Object jsonSchema) {
         this.jsonSchemaPath = jsonSchema.toString();
         return this;
     }
@@ -83,10 +83,12 @@ public class    AddJsonBodyMethod implements Method {
             e.printStackTrace();
         }
 
+        ClassName schemaClassName = ClassName.get(packageForJsonGen, bodyClassName);
+
         return MethodSpec.methodBuilder("with" + bodyClassName)
                 .addJavadoc("$L\n", example)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(ClassName.bestGuess(bodyClassName), "body")
+                .addParameter(schemaClassName, "body")
                 .returns(ClassName.bestGuess(returnClassName))
                 .addStatement("$L.addHeader($S, $S)", reqName, "Content-Type", "application/json")
                 .addStatement("$L.setBody(new $T().serializeNulls().create().toJson(body))", reqName, GsonBuilder.class)

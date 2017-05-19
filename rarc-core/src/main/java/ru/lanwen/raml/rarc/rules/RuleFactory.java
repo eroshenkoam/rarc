@@ -24,8 +24,8 @@ public class RuleFactory {
         return codegenConfig;
     }
 
-    public Rule<Resource> getResourseRule() {
-        return new ResourseRule();
+    public Rule<Resource> getResourceRule() {
+        return new ResourceRule();
     }
 
     public Rule<AbstractParam> getParameterRule() {
