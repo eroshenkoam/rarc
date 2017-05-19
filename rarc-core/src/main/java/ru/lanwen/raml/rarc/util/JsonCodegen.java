@@ -2,7 +2,14 @@ package ru.lanwen.raml.rarc.util;
 
 import com.sun.codemodel.JCodeModel;
 import io.restassured.path.json.JsonPath;
-import org.jsonschema2pojo.*;
+
+import org.jsonschema2pojo.DefaultGenerationConfig;
+import org.jsonschema2pojo.GenerationConfig;
+import org.jsonschema2pojo.GsonAnnotator;
+import org.jsonschema2pojo.SchemaGenerator;
+import org.jsonschema2pojo.SchemaMapper;
+import org.jsonschema2pojo.SchemaStore;
+import org.jsonschema2pojo.SourceType;
 import org.jsonschema2pojo.rules.RuleFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
