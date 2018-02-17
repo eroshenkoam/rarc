@@ -45,7 +45,7 @@ public class AddFormParamMethod implements AddParamMethod {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.bestGuess(apiClass.name()))
                 .varargs(param.isRepeat())
-                .addParameter(param.isRepeat() ? ArrayTypeName.of(ClassName.get(String.class)) : ClassName.get(String.class), sanitized)
+                .addParameter(param.isRepeat() ? ArrayTypeName.of(ClassName.get(Object.class)) : ClassName.get(Object.class), sanitized)
                 .addStatement("$L.addFormParam($S, $L)", req.name(), name, sanitized)
                 .addStatement("return this", req.name())
                 .build();
