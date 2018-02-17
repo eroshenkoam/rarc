@@ -43,7 +43,7 @@ public class AddAnyParamMethod implements AddParamMethod {
                 .addJavadoc("@param $L $L\n", sanitized, trimToEmpty(param.getDescription()))
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.bestGuess(apiClass.name()))
-                .addParameter(ClassName.get(String.class), sanitized)
+                .addParameter(ClassName.get(Object.class), sanitized)
                 .addStatement("$L.addParam($S, $L)", req.name(), name, sanitized)
                 .addStatement("return this", req.name())
                 .build();
